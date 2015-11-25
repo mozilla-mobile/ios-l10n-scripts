@@ -16,7 +16,7 @@ module Fastlane
         Helper.log.info "Branch Name: #{params[:branch]}"
         Helper.log.info "Branch From: #{params[:base_branch]}"
 
-        if not params[:base_branch].empty?
+        if params[:base_branch] and not params[:base_branch].empty?
           sh("git checkout '#{params[:base_branch]}' || exit 1")
         end
         sh("git checkout '#{params[:branch]}' || git checkout -b '#{params[:branch]}' || exit 1")

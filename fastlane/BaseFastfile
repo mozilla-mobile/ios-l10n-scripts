@@ -139,12 +139,6 @@ platform :ios do
     )
   end
 
-  desc "Takes marketing snapshots using current branch"
-  lane :marketing do
-    snapshot
-    frameit(white: true)
-  end
-
   after_all do |lane|
     # This block is called, only if the executed lane was successful
     
