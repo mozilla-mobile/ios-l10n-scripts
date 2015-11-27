@@ -90,14 +90,14 @@ module Fastlane
         Helper.log.info "Uploading to #{params[:host]}:#{params[:upload_location]}"
         command = "scp #{assets_dir}/#{html_file_name} #{params[:host]}:#{params[:upload_location]}/#{html_file_name} || exit 1\n \
 scp #{assets_dir}/#{html_file_name} #{params[:host]}:#{params[:upload_location]}/#{plist_file_name} || exit 1\n \
-scp builds/#{params[:build_name]}.ipa #{params[:host]}:#{params[:upload_location]}/builds/#{params[:build_name]}.ipa || exit 1\n \
-scp builds/#{params[:build_name]}.app.dSYM.zip #{params[:host]}:#{params[:upload_location]}/builds/#{params[:build_name]}.app.dSYM.zip || exit 1\n \
+scp #{params[:build_location]}/#{params[:build_name]}.ipa #{params[:host]}:#{params[:upload_location]}/builds/#{params[:build_name]}.ipa || exit 1\n \
+scp #{params[:build_location]}/#{params[:build_name]}.app.dSYM.zip #{params[:host]}:#{params[:upload_location]}/builds/#{params[:build_name]}.app.dSYM.zip || exit 1\n \
 
-ssh #{params[:host]} 'ln -sf /home/iosbuilds/#{plist_file_name} #{params[:upload_location]}/#{build_flavour}.plist'|| exit 1\n \
-ssh #{params[:host]} 'ln -sf /home/iosbuilds/#{html_file_name} #{params[:upload_location]}/#{build_flavour}.html' || exit 1"
+ssh #{params[:host]} 'ln -sf #{params[:upload_location]}/#{plist_file_name} #{params[:upload_location]}/#{build_flavour}.plist'|| exit 1\n \
+ssh #{params[:host]} 'ln -sf #{params[:upload_location]}/#{html_file_name} #{params[:upload_location]}/#{build_flavour}.html' || exit 1"
 
         Helper.log.debug "Executing: #{command}"
-        #sh(command)
+        sh(command)
         Helper.log.info "Successfully uploaded enterprise build "
       end
 
@@ -141,6 +141,10 @@ ssh #{params[:host]} 'ln -sf /home/iosbuilds/#{html_file_name} #{params[:upload_
                                           raise "No release notes location provided, pass using `release_notes: 'location'`".red unless (value and not value.empty?)
                                           # raise "Couldn't find file at path '#{value}'".red unless File.exist?(value)
                                        end),
+          FastlaneCore::ConfigItem.new(key: :build_location,
+                                       env_name: "FL_UPLOAD_ENTERPRISE_BUILD_LOCATION", # The name of the environment variable
+                                       description: "Path where the build can be found", # a short description of this parameter
+                                       default_value: "builds"),
           FastlaneCore::ConfigItem.new(key: :build_name,
                                        env_name: "FL_UPLOAD_ENTERPRISE_BUILD_NAME", # The name of the environment variable
                                        description: "Name of the build to upload", # a short description of this parameter

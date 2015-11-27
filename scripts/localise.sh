@@ -10,7 +10,7 @@ STATIC_DEPS=true pip install lxml || exit 1
 # Import locales
 #
 echo "Importing Locales"
-scripts/import-locales.sh --only-complete || exit 1
+scripts/import-locales.sh $1 || exit 1
 
 echo "Deactivating virtualenv"
 deactivate
