@@ -104,9 +104,7 @@ extension AuroraAppDelegate: UIAlertViewDelegate {
             UIApplication.sharedApplication().openURL(NSURL(string: AuroraDownloadPageURL)!)
         }
     }
-}
 
-extension AuroraAppDelegate: MFMailComposeViewControllerDelegate {
     private func sendFeedbackMailWithImage(image: UIImage) {
         if (MFMailComposeViewController.canSendMail()) {
             if let buildNumber = NSBundle.mainBundle().objectForInfoDictionaryKey(String(kCFBundleVersionKey)) as? NSString {
@@ -123,7 +121,7 @@ extension AuroraAppDelegate: MFMailComposeViewControllerDelegate {
         }
     }
 
-    func mailComposeController(mailComposeViewController: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+    override func mailComposeController(mailComposeViewController: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
         mailComposeViewController.dismissViewControllerAnimated(true, completion: nil)
     }
 }
