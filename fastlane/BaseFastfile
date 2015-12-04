@@ -76,18 +76,16 @@ platform :ios do
   private_lane :enterprise_build do |options|
     options = options[:options] || options
 
-    sigh(app_identifier: "org.mozilla.ios.FennecAurora",
-      output_path: "./provisioning-profiles/",
-      username: options[:username] || "ios-builds@mozilla.com" )
-    sigh(app_identifier: "org.mozilla.ios.FennecAurora.SendTo",
+    [
+      "org.mozilla.ios.FennecAurora", 
+      "org.mozilla.ios.FennecAurora.SendTo",
+      "org.mozilla.ios.FennecAurora.ShareTo",
+      "org.mozilla.ios.FennecAurora.ViewLater"
+    ].each do |bundle_identifier|
+      sigh(app_identifier: bundle_identifier,
       output_path: "./provisioning-profiles/",
       username: options[:username] || "ios-builds@mozilla.com")
-    sigh(app_identifier: "org.mozilla.ios.FennecAurora.ShareTo",
-      output_path: "./provisioning-profiles/",
-      username: options[:username] || "ios-builds@mozilla.com" )
-    sigh(app_identifier: "org.mozilla.ios.FennecAurora.ViewLater",
-      output_path: "./provisioning-profiles/",
-      username: options[:username] || "ios-builds@mozilla.com" )
+    end
 
     gym(scheme: "FennecAurora",
       output_directory: "./builds/",
