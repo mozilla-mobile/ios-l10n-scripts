@@ -1,4 +1,5 @@
-app_identifier "org.mozilla.ios.Fennec" # The bundle identifier of your app
+app_identifier "org.mozilla.ios.Firefox" # The bundle identifier of your app
+team_id '43AQ936H96'
 
 for_lane :aurora do
 	team_id '9G8J6YA743' 
