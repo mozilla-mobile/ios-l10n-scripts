@@ -199,7 +199,7 @@ platform :ios do
 
   desc "Takes marketing snapshots using current branch"
   lane :marketing do
-    snapshot
+    snapshot(uninstall_app: true)
     frameit(white: true)
   end
 
