@@ -15,8 +15,6 @@ devices([
 
 languages([
   "de",
-  "en-US",
-  "it-IT"
 ])
 
 # The name of the scheme which contains the UI Tests
