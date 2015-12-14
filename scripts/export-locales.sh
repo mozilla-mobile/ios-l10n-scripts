@@ -3,7 +3,7 @@
 #
 # Assumes the following is installed:
 #
-#  svn
+#  git
 #  brew
 #  python via brew
 #  virtualenv via pip in brew
@@ -30,7 +30,7 @@ brew install libxml2 || exit 1
 STATIC_DEPS=true pip install lxml || exit 1
 
 # Check out a clean copy of the l10n repo
-svn co https://svn.mozilla.org/projects/l10n-misc/trunk/firefox-ios firefox-ios-l10n || exit 1
+git clone https://github.com/mozilla-l10n/firefoxios-l10n firefox-ios-l10n firefox-ios-l10n || exit 1
 
 # Export English base to /tmp/en.xliff
 rm -f /tmp/en.xliff || exit 1
