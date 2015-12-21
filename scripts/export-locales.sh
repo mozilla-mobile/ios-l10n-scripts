@@ -30,7 +30,7 @@ brew install libxml2 || exit 1
 STATIC_DEPS=true pip install lxml || exit 1
 
 # Check out a clean copy of the l10n repo
-git clone https://github.com/mozilla-l10n/firefoxios-l10n firefox-ios-l10n firefox-ios-l10n || exit 1
+git clone https://github.com/mozilla-l10n/firefoxios-l10n firefox-ios-l10n || exit 1
 
 # Export English base to /tmp/en.xliff
 rm -f /tmp/en.xliff || exit 1
@@ -48,7 +48,7 @@ cp /tmp/en.xliff firefox-ios-l10n/en-US/firefox-ios.xliff || exit 1
 cp /tmp/en.xliff firefox-ios-l10n/templates/firefox-ios.xliff || exit 1
 
 # Update all locales (including 'templates')
-scripts/update-xliff.py firefox-ios-l10n || exit 1
+../firefox-ios-build-tools/scripts/update-xliff.py firefox-ios-l10n || exit 1
 
 # Clean up /templates removing target-language and translations
-scripts/clean-xliff.py firefox-ios-l10n/templates || exit 1
+../firefox-ios-build-tools/scripts/clean-xliff.py firefox-ios-l10n/templates || exit 1
