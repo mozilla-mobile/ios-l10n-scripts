@@ -5,7 +5,7 @@
 #
 #  Export all locales that are present in the l10n directory. We use xcodebuild
 #  to export and write to l10n-directory/$locale/firefox-ios.xliff so that it
-#  can be easily imported into svn. (which is a manual step)
+#  can be easily imported into Git (which is a manual step).
 #
 # Example:
 #

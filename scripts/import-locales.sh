@@ -6,15 +6,13 @@ if [ ! -d Client.xcodeproj ]; then
 fi
 
 if [ -d firefox-ios-l10n ]; then
-  if [ -d firefox-ios-l10n/.svn ]; then
-    echo "deleting existng firefox-ios-l10n svn repo"
+  if [ -d firefox-ios-l10n/.git ]; then
+    echo "Deleting existing firefox-ios-l10n Git repo"
     rm -r firefox-ios-l10n
-    svn co --non-interactive --trust-server-cert https://svn.mozilla.org/projects/l10n-misc/trunk/firefox-ios firefox-ios-l10n || exit 1
   fi
-fi 
-echo "creating firefox-ios-l10n svn repo"
-svn co --non-interactive --trust-server-cert https://svn.mozilla.org/projects/l10n-misc/trunk/firefox-ios firefox-ios-l10n || exit 1
-
+fi
+echo "Creating firefox-ios-l10n Git repo"
+git clone https://github.com/mozilla-l10n/firefoxios-l10n firefox-ios-l10n || exit 1
 
 #
 # TODO Add incomplete locales here that are NOT to be included.
@@ -53,4 +51,3 @@ scripts/xliff-to-strings.py firefox-ios-l10n localized-strings|| exit 1
 
 # Modify the Xcode project to reference the strings files we just created
 scripts/strings-import.py Client.xcodeproj localized-strings || exit 1
-

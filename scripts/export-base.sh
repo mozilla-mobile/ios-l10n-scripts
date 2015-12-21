@@ -11,7 +11,7 @@ if [ -d firefox-ios-l10n ]; then
 fi
 
 # Check out a clean copy of the l10n repo
-svn co https://svn.mozilla.org/projects/l10n-misc/trunk/firefox-ios firefox-ios-l10n
+git clone https://github.com/mozilla-l10n/firefoxios-l10n firefox-ios-l10n
 
 # Export English base to /tmp/en.xliff
 rm -f /tmp/en.xliff
@@ -26,4 +26,4 @@ fi
 cp /tmp/en.xliff firefox-ios-l10n/en-US/firefox-ios.xliff
 
 # Show what has changed
-(cd firefox-ios-l10n && svn status)
+(cd firefox-ios-l10n && git status)
