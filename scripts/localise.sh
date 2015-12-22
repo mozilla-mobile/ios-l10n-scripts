@@ -15,7 +15,10 @@ scripts/import-locales.sh $1 || exit 1
 echo "Deactivating virtualenv"
 deactivate
 
-git add firefox-ios-l10n Client/*.lproj Extensions/*/*.lproj Client.xcodeproj/project.pbxproj || exit 1
+echo "Committing localised files"
+git status
+git add Client/*.lproj Extensions/*/*.lproj Client.xcodeproj/project.pbxproj || exit 1
 git commit -m 'Import localized files' || exit 1
+git status
 
 cd fastlane
