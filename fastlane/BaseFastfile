@@ -260,8 +260,9 @@ platform :ios do
   :languages - a list of languages to take snapshots of \
   :output_directory - the directory to output the snapshots to"
   lane :snapshotL10n do |options|
-    devices = options[:devices] || ["iPhone 6"]
-    languages = options[:languages] || [ "en-US" ]
+    devices = options[:devices].split(",") || ["iPhone 6"]
+    languages = options[:languages].split(",") || [ "en-US" ]
+
     snapshot(
       scheme: "L10nSnapshotTests",
       devices: devices,
