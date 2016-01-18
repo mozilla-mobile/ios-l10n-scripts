@@ -49,8 +49,8 @@ FILES = [
     "Client/SendAnonymousUsageData.strings",
     "Client/Shared.strings",
     "Client/Storage.strings",
+    "Client/SendTo.strings",
     "Extensions/SendTo/Info.plist",
-    "Extensions/SendTo/SendTo.strings",
     "Extensions/ShareTo/ShareTo.strings",
     "Extensions/ViewLater/Info.plist",
     "Shared/Localizable.strings",
@@ -61,6 +61,15 @@ FILENAME_OVERRIDES = {
     "Shared/Supporting Files/Info.plist": "Shared/Localizable.strings",
     "Shared/Supporting Files/Shared.strings": "Client/Shared.strings",
     "Storage.strings": "Client/Storage.strings",
+}
+
+# Because Xcode can't handle strings that need to live in two
+# different bundles, we also duplicate some files.(For example
+# SendTo.strings is needed both in the main app and in the SendTo
+# extension.) See bug 1234322
+
+FILES_TO_DUPLICATE = {
+    "Client/SendTo.strings": ["Extensions/SendTo/SendTo.strings"],
 }
 
 def export_xliff_file(file_node, export_path, target_language):
@@ -134,6 +143,12 @@ if __name__ == "__main__":
                 original = file_node.get('original')
                 original = FILENAME_OVERRIDES.get(original, original)
                 if original in FILES:
-                    export_path = original_path(export_root, target_language, original)
-                    print "  Writing", export_path, target_language
-                    export_xliff_file(file_node, export_path, target_language)
+                    # Because we have strings files that need to live in multiple bundles
+                    # we build a list of export_paths. Start with the default.
+                    export_paths = [original_path(export_root, target_language, original)]
+                    for extra_copy in FILES_TO_DUPLICATE.get(original, []):
+                        export_path = original_path(export_root, target_language, extra_copy)
+                        export_paths.append(export_path)
+                    for export_path in export_paths:
+                        print "  Writing %s to %s" % (original, export_path)
+                        export_xliff_file(file_node, export_path, target_language)
