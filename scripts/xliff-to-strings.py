@@ -30,15 +30,23 @@ NS = {'x':'urn:oasis:names:tc:xliff:document:1.2'}
 
 # Files we are interested in. It would be nice to not hardcode this but I'm not totally sure how yet.
 FILES = [
+    "Client/3DTouchActions.strings",
+    "Client/AuthenticationManager.strings",
     "Client/BookmarkPanel.strings",
+    "Client/ClearHistoryConfirm.strings",
     "Client/ClearPrivateData.strings",
     "Client/ErrorPages.strings",
+    "Client/FindInPage.strings",
     "Client/HistoryPanel.strings",
     "Client/Info.plist",
     "Client/Intro.strings",
+    "Client/LightweightThemes.strings",
     "Client/Localizable.strings",
+    "Client/LoginManager.strings",
+    "Client/OnePasswordExtension.strings",
     "Client/PrivateBrowsing.strings",
     "Client/Search.strings",
+    "Client/SendAnonymousUsageData.strings",
     "Client/Shared.strings",
     "Client/Storage.strings",
     "Extensions/SendTo/Info.plist",
