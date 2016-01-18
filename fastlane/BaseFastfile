@@ -173,8 +173,8 @@ platform :ios do
       use_legacy_build_api: true)
 
     changelog = ""
-    if params[:changelog]
-      File.open(params[:changelog], "r") do |f|
+    if options[:changelog] == true
+      File.open(options[:changelog], "r") do |f|
         f.each_line do |line|
           changelog += line
         end
@@ -198,7 +198,7 @@ platform :ios do
   :changelog        the path to the changelog for the beta build"
   lane :fennec do |options|
     options = options[:options] || options
-    options[:scheme] = "Fennec"
+    options[:scheme] = "FennecAurora"
     puts "fennec: #{options}\n"
     beta(options: options)
   end

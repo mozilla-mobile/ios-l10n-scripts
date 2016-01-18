@@ -4,8 +4,7 @@ echo "Activating virtualenv"
 virtualenv python-env || exit 1
 source python-env/bin/activate || exit 1
 # install libxml2
-brew install libxml2 || exit 1
-STATIC_DEPS=true pip install lxml || exit 1
+STATIC_DEPS=true LIBXML2_VERSION=2.9.2 pip install lxml || exit 1
 #
 # Import locales
 #
@@ -17,7 +16,7 @@ deactivate
 
 echo "Committing localised files"
 git status
-git add Client/*.lproj Extensions/*/*.lproj Client.xcodeproj/project.pbxproj || exit 1
+git add Client/*.lproj Extensions/*/*.lproj Client.xcodeproj/project.pbxproj firefox-ios-l10n || exit 1
 git commit -m 'Import localized files' || exit 1
 git status
 
