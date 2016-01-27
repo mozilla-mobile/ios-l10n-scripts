@@ -7,8 +7,11 @@ fi
 
 if [ -d firefox-ios-l10n ]; then
   if [ -d firefox-ios-l10n/.git ]; then
-    echo "Deleting existing firefox-ios-l10n Git repo"
-    rm -r firefox-ios-l10n
+    echo "updating existing firefox-ios-l10n Git repo"
+    git pull --rebase
+  else
+    echo "Creating firefox-ios-l10n Git repo"
+    git clone https://github.com/mozilla-l10n/firefoxios-l10n firefox-ios-l10n || exit 1
   fi
 fi
 echo "Creating firefox-ios-l10n Git repo"

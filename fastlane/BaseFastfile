@@ -9,6 +9,8 @@ default_platform :ios
 
 platform :ios do
   before_all do 
+    # make builds & prov profile dirs
+    sh("./scripts/mkdirs.sh")
   end
 
   private_lane :setup do |options|
@@ -46,9 +48,6 @@ platform :ios do
       only_complete = options[:localise_only_complete] || false ? "--only-complete" : ""
       sh("../scripts/localise.sh #{only_complete}")
     end
-
-    # make builds & prov profile dirs
-    sh("./scripts/mkdirs.sh")
 
     version_bumped = false
 
@@ -270,6 +269,32 @@ platform :ios do
   lane :marketing do
     snapshot(reinstall_app: true)
     frameit(white: true)
+  end
+
+  desc "Takes localization snapshots \
+  :devices - a list of devices to take snapshots on \
+  :languages - a list of languages to take snapshots of \
+  :output_directory - the directory to output the snapshots to"
+  lane :snapshotL10n do |options|
+    if options[:devices]
+      devices = options[:devices].split(",") 
+    else
+      devices = ["iPhone 6"]
+    end
+
+    if options[:languages]
+      languages = options[:languages].split(",")
+    else
+      languages = [ "en-US" ]
+    end
+
+    snapshot(
+      scheme: "L10nSnapshotTests",
+      devices: devices,
+      languages: languages,
+      output_directory: options[:output_directory] || "./fastlane/screenshots",
+      stop_after_first_error: true
+      )
   end
 
   after_all do |lane|
