@@ -293,7 +293,8 @@ platform :ios do
       devices: devices,
       languages: languages,
       output_directory: options[:output_directory] || "./fastlane/screenshots",
-      stop_after_first_error: true
+      stop_after_first_error: true,
+      reinstall_app: true
       )
   end
 
