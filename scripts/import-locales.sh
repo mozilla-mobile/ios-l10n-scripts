@@ -24,14 +24,14 @@ svn export --force https://github.com/mozilla-l10n/firefoxios-l10n/trunk firefox
 
 INCOMPLETE_LOCALES=(
     "ar"
-    "az"
+    "bn-IN"
     "da"
-    "kk"
-    "lo"
+    "el"
+    "gl"
+    "ml"
     "ms"
     "my"
-    "son"
-    "th"
+    "or"
 )
 
 if [ "$1" == "--only-complete" ]; then
