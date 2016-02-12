@@ -5,15 +5,8 @@ if [ ! -d Client.xcodeproj ]; then
   exit 1
 fi
 
-if [ -d firefox-ios-l10n ]; then
-  if [ -d firefox-ios-l10n/.git ]; then
-    echo "updating existing firefox-ios-l10n Git repo"
-    git pull --rebase
-  else
-    echo "Creating firefox-ios-l10n Git repo"
-    git clone https://github.com/mozilla-l10n/firefoxios-l10n firefox-ios-l10n || exit 1
-  fi
-fi
+# using svn export to get a version of the git repo so we can use --force to make rerunning easy
+# and it also allows us to ensure that the repo doesn't get treated as a submodule byt git
 echo "Creating firefox-ios-l10n Git repo"
 svn export --force https://github.com/mozilla-l10n/firefoxios-l10n/trunk firefox-ios-l10n || exit 1
 

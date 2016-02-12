@@ -11,6 +11,7 @@ platform :ios do
   before_all do 
     # make builds & prov profile dirs
     sh("./scripts/mkdirs.sh")
+    ensure_git_status_clean()
   end
 
   private_lane :setup do |options|
@@ -90,7 +91,7 @@ platform :ios do
   private_lane :enterprise_build do |options|
     options = options[:options] || options
 
-    sh("sigh download_all -u #{username}")
+    sh("sigh download_all -u #{options[:username]}")
 
     gym(scheme: "FennecAurora",
       output_directory: "./builds/",
@@ -110,6 +111,7 @@ platform :ios do
         upload_location: options[:upload_location]
       )
     end
+    clean_build_artifacts()
   end
 
   desc "Builds an Aurora build. Takes the following arguments: \n \
@@ -200,6 +202,8 @@ platform :ios do
     pilot(ipa: "./builds/#{ENV["BUILD_NAME"]}.ipa",
       skip_submission: true,
       changelog: changelog)
+    
+    clean_build_artifacts()
   end
 
   desc "Builds an beta build for the Fennec channel. Takes the following arguments: \n \
