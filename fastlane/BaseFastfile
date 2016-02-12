@@ -44,6 +44,11 @@ platform :ios do
       branch: ENV["BRANCH_NAME"]
     )
 
+    carthage(
+      platform: "iOS",
+      use_binaries: false
+    )
+
     if opts[:localise] || false
       # import locales
       only_complete = options[:localise_only_complete] || false ? "--only-complete" : ""
@@ -111,7 +116,7 @@ platform :ios do
         upload_location: options[:upload_location]
       )
     end
-    clean_build_artifacts()
+    reset_git_repo()
   end
 
   desc "Builds an Aurora build. Takes the following arguments: \n \
@@ -153,6 +158,8 @@ platform :ios do
     # this is duplicating the original AppDelegate hack from firefox-ios-builder
     # copy an l10n specific AppDelegate into the project
     sh("cp templates/FennecAurora-L10N.swift ../Client/Application/AuroraAppDelegate.swift || exit 1")
+    git_commit(path: "./Client/Application/AuroraAppDelegate.swift",
+        message: "set l10n AuroraAppDelegate")
 
     # build for enterprise
     enterprise_build(options: options)
@@ -202,8 +209,8 @@ platform :ios do
     pilot(ipa: "./builds/#{ENV["BUILD_NAME"]}.ipa",
       skip_submission: true,
       changelog: changelog)
-    
-    clean_build_artifacts()
+
+    reset_git_repo()
   end
 
   desc "Builds an beta build for the Fennec channel. Takes the following arguments: \n \
