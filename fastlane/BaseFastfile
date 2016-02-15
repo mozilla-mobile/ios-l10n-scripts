@@ -272,30 +272,57 @@ platform :ios do
   end
 
   desc "Takes localization snapshots \
-  :devices - a list of devices to take snapshots on \
-  :languages - a list of languages to take snapshots of \
+  :devices - a comma separated list of devices to take snapshots on. Defaults to [iPhone 4s, iPhone 5s, iPhone 6s, iPhone 6s Plus, iPad 2, iPad Pro] \
+  :languages - a comma separated list of languages to take snapshots of. Defaults to list of languages in ./firefox-ios-l10n \
   :output_directory - the directory to output the snapshots to"
   lane :snapshotL10n do |options|
     if options[:devices]
       devices = options[:devices].split(",") 
     else
-      devices = ["iPhone 6"]
+      devices = ["iPhone 4s", "iPhone 5s", "iPhone 6s", "iPhone 6s Plus", "iPad 2", "iPad Pro"]
     end
 
     if options[:languages]
       languages = options[:languages].split(",")
     else
-      languages = [ "en-US" ]
+      # get the languages from the repo
+      language_options = Dir.entries("../firefox-ios-l10n")
+      languages = []
+      for language in language_options
+        if language != "templates" && language != "README.md" && language != "." && language != ".."
+          languages.push(language)
+        end
+      end
     end
 
-    snapshot(
-      scheme: "L10nSnapshotTests",
-      devices: devices,
-      languages: languages,
-      output_directory: options[:output_directory] || "./fastlane/screenshots",
-      stop_after_first_error: true,
-      reinstall_app: true
+    output_dir = options[:output_directory] || "./screenshots"
+    Dir.mkdir(output_dir) unless File.directory?(output_dir)
+
+    output_links = ""
+    # loop through languages
+    for language in languages
+      # create a new directory (if it doesn't exist) for the language
+      language_dir = "#{output_dir}/#{language}"
+      Dir.mkdir(language_dir) unless File.directory?(language_dir)
+      if not options[:output_directory]
+        language_dir = "./fastlane/screenshots/#{language}"
+      end
+      # pass that directory as the output directory into snapshot
+      snapshot(
+        scheme: "L10nSnapshotTests",
+        devices: devices,
+        languages: languages,
+        output_directory: language_dir,
+        stop_after_first_error: true,
+        reinstall_app: true
       )
+      # add dir name to array
+      output_file = "#{language}/screenshots.html"
+      output_links << "<li><a href='#{output_file}'>#{language}</a></li>\n"
+      Helper.log.debug "Creating snapshots for #{language} in #{language_dir}/screenshots.html"
+    end 
+    Helper.log.debug "all screenshots: #{output_links}"
+    # create (from a template) a new HTML file in options[:output_directory] || "./fastlane/screenshots" to index all language files
   end
 
   after_all do |lane|
