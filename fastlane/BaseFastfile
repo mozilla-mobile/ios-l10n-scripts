@@ -311,10 +311,11 @@ platform :ios do
       snapshot(
         scheme: "L10nSnapshotTests",
         devices: devices,
-        languages: languages,
+        languages: [language],
         output_directory: language_dir,
         stop_after_first_error: true,
-        reinstall_app: true
+        reinstall_app: true,
+        skip_open_summary: true
       )
       # add dir name to array
       output_file = "#{language}/screenshots.html"
@@ -323,6 +324,16 @@ platform :ios do
     end 
     Helper.log.debug "all screenshots: #{output_links}"
     # create (from a template) a new HTML file in options[:output_directory] || "./fastlane/screenshots" to index all language files
+    index_html = ""
+    File.open("./templates/SnapshotIndex.html.tmpl", "r") do |f|
+      f.each_line do |line|
+        index_html += line
+      end
+    end
+    index_html.gsub! '#{locale_links}', output_links
+    File.open("#{output_dir}/index.html", 'w') {|f| f.write(index_html) }
+    Helper.log.info "Snapshot Index can be found at #{output_dir}/index.html"
+    sh("open #{output_dir}/index.html")
   end
 
   after_all do |lane|
