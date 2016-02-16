@@ -15,9 +15,8 @@ echo "Deactivating virtualenv"
 deactivate
 
 echo "Committing localised files"
-git status
-git add Client/*.lproj Extensions/*/*.lproj Client.xcodeproj/project.pbxproj firefox-ios-l10n || exit 1
+git add Client/*.lproj Extensions/*/*.lproj Client.xcodeproj/project.pbxproj || exit 1
 git commit -m 'Import localized files' || exit 1
-git status
+
 
 cd fastlane

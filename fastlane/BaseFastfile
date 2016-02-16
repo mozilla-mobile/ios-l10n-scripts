@@ -11,6 +11,7 @@ platform :ios do
   before_all do 
     # make builds & prov profile dirs
     sh("./scripts/mkdirs.sh")
+    ensure_git_status_clean()
   end
 
   private_lane :setup do |options|
@@ -41,6 +42,11 @@ platform :ios do
     checkout_git_branch(
       base_branch: opts[:base_branch],
       branch: ENV["BRANCH_NAME"]
+    )
+
+    carthage(
+      platform: "iOS",
+      use_binaries: false
     )
 
     if opts[:localise] || false
@@ -90,7 +96,7 @@ platform :ios do
   private_lane :enterprise_build do |options|
     options = options[:options] || options
 
-    sh("sigh download_all -u #{username}")
+    sh("sigh download_all -u #{options[:username]}")
 
     gym(scheme: "FennecAurora",
       output_directory: "./builds/",
@@ -110,6 +116,7 @@ platform :ios do
         upload_location: options[:upload_location]
       )
     end
+    reset_git_repo()
   end
 
   desc "Builds an Aurora build. Takes the following arguments: \n \
@@ -151,6 +158,8 @@ platform :ios do
     # this is duplicating the original AppDelegate hack from firefox-ios-builder
     # copy an l10n specific AppDelegate into the project
     sh("cp templates/FennecAurora-L10N.swift ../Client/Application/AuroraAppDelegate.swift || exit 1")
+    git_commit(path: "./Client/Application/AuroraAppDelegate.swift",
+        message: "set l10n AuroraAppDelegate")
 
     # build for enterprise
     enterprise_build(options: options)
@@ -200,6 +209,8 @@ platform :ios do
     pilot(ipa: "./builds/#{ENV["BUILD_NAME"]}.ipa",
       skip_submission: true,
       changelog: changelog)
+
+    reset_git_repo()
   end
 
   desc "Builds an beta build for the Fennec channel. Takes the following arguments: \n \
