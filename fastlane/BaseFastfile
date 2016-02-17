@@ -169,6 +169,7 @@ platform :ios do
       ENV["SCHEME"] = "FirefoxBeta"
     when 'production'
       ENV["SCHEME"] = "Firefox"
+    end
 
     setup(options: options,
       localise_only_complete: true)
