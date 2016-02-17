@@ -172,7 +172,9 @@ platform :ios do
     )
 
     username = options[:username] || "ios-builds@mozilla.com"
-    sh("sigh download_all -u #{username} --output_path '../provisioning-profiles/'")
+
+    # Make sure to download profiles from the correct in-house team id
+    sh("sigh download_all -u #{username} --output_path '../provisioning-profiles/' -b 9G8J6YA743")
 
     gym(scheme: ENV["SCHEME"],
       output_directory: "./builds/",
