@@ -150,9 +150,6 @@ platform :ios do
     setup(options: options,
       localise_only_complete: true)
 
-    username = options[:username] || "ios-builds@mozilla.com"
-    sh("sigh download_all -u #{username} --output_path '../provisioning-profiles/'")
-
     # Use enterprise bundle identifier
     update_info_plist(
       plist_path: 'Client/Info.plist',
@@ -173,6 +170,9 @@ platform :ios do
       plist_path: 'Extensions/SendTo/Info.plist',
       app_identifier: "$(PRODUCT_BUNDLE_IDENTIFIER).enterprise"
     )
+
+    username = options[:username] || "ios-builds@mozilla.com"
+    sh("sigh download_all -u #{username} --output_path '../provisioning-profiles/'")
 
     gym(scheme: ENV["SCHEME"],
       output_directory: "./builds/",
