@@ -14,3 +14,7 @@ end
 for_lane :fennec do
 	app_identifier 'org.mozilla.ios.Fennec'
 end
+
+for_lane :nightly do
+  app_identifier 'org.mozilla.ios.FirefoxNightly'
+end
