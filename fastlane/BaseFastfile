@@ -32,8 +32,8 @@ platform :ios do
 
     # create a name for this build
     ENV["DATESTAMP"] = Time.now.utc.iso8601.gsub(/\W/, '')
-    ENV["BRANCH_NAME"] = options[:branch] || "firefox-#{ENV["APP_VERSION"]}-#{ENV["BUILD_VERSION"]}-#{ENV["DATESTAMP"]}"
-    ENV["BUILD_NAME"] = options[:build_name] || "firefox-ios-#{ENV["BUILD_FLAVOUR"]}-#{ENV["APP_VERSION"]}-#{ENV["BUILD_VERSION"]}-#{ENV["DATESTAMP"]}"
+    ENV["BRANCH_NAME"] = options[:branch] || "#{ENV["SCHEME"]}-v#{ENV["APP_VERSION"]}b#{ENV["BUILD_VERSION"]}"
+    ENV["BUILD_NAME"] = options[:build_name] || ENV["BRANCH_NAME"]
     puts "Building #{ENV["BUILD_NAME"]}.ipa from branch #{ENV["BRANCH_NAME"]}"
 
     ENV["SIGH_USERNAME"] = options[:username]
@@ -76,11 +76,11 @@ platform :ios do
     # configure Adjust parameters if environment and token exist
     if ENV["ADJUST_ENVIRONMENT"] and ENV["ADJUST_APP_TOKEN"]
       configure_adjust(
-          target: "Firefox",
+          target: ENV["SCHEME"],
           environment: ENV["ADJUST_ENVIRONMENT"],
           app_token: ENV["ADJUST_APP_TOKEN"]
       )
-      git_add(path: "Client/Configuration/Firefox.xcconfig")
+      git_add(path: "Client/Configuration/#{ENV["SCHEME"]}.xcconfig")
     else
       Helper.log.info " -- !! Skipping Adjust configuration since not all Adjust parameters are available."
     end
@@ -180,13 +180,16 @@ platform :ios do
   lane :nightly do |options|
     options = options[:options] || options
     puts "nightly: #{options}\n"
+
+    ENV["SCHEME"] = "FirefoxNightly"
+
     setup(options: options,
       localise_only_complete: true)
 
     username = options[:username] || "ios-builds@mozilla.com"
     sh("sigh download_all -u #{username} --output_path '../provisioning-profiles/'")
 
-    gym(scheme: "FirefoxNightly",
+    gym(scheme: ENV["FirefoxNightly"],
       output_directory: "./builds/",
       output_name: "#{ENV["BUILD_NAME"]}.ipa",
       sdk: "iphoneos",
