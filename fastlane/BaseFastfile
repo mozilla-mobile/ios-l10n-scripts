@@ -3,9 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/. 
 
 fastlane_version "1.39.0"
-
 default_platform :ios
-
 
 platform :ios do
   before_all do 
@@ -98,7 +96,7 @@ platform :ios do
 
     sh("sigh download_all -u #{options[:username]}")
 
-    gym(scheme: "FennecAurora",
+    gym(scheme: ENV["SCHEME"],
       output_directory: "./builds/",
       output_name: "#{ENV["BUILD_NAME"]}.ipa",
       sdk: "iphoneos",
@@ -119,26 +117,6 @@ platform :ios do
     reset_git_repo()
   end
 
-  desc "Builds an Aurora build. Takes the following arguments: \n \
-  :build            the build number for this build. Defaults to current build number \n \
-  :version          the version number for this build. Defaults to current version number \n \
-  :branch           the branch to build (will create if doesn't already exist. A new branch with a predictable username will be \
-    created if this is not provided) \n \
-  :base_branch      the branch with off of which the build should be based (current branch if empty) \n \
-  :build_name       the name of the resultant build. Defaults to firefox-ios-aurora-<:version>-<:build>-<timestamp> \n \
-  :username         the Apple ID to use to log into the developer portal for SIGH \n \
-  :localise         if true, the branch will be localised. If absent or false no localisation will occur \n \
-  :upload           if true, the build will be uploaded to the enterprise server (see the upload lane for further paramters to pass \
-    for uploading)"
-  lane :aurora do |options|
-    options = options[:options] || options
-    puts "Aurora: #{options}\n"
-    setup(options: options)
-
-    # build for enterprise
-    enterprise_build(options: options)
-  end
-
   desc "Builds an l10n build. Takes the following arguments: \n \
   :build            the build number for this build. Defaults to current build number \n \
   :version          the version number for this build. Defaults to current version number \n \
@@ -155,6 +133,8 @@ platform :ios do
     puts "l10n: #{options}\n"
     setup(options: options)
 
+    ENV["SCHEME"] - "FirefoxBetaEnterprise"
+
     # this is duplicating the original AppDelegate hack from firefox-ios-builder
     # copy an l10n specific AppDelegate into the project
     sh("cp templates/FennecAurora-L10N.swift ../Client/Application/AuroraAppDelegate.swift || exit 1")
@@ -165,7 +145,8 @@ platform :ios do
     enterprise_build(options: options)
   end
 
-  desc "Builds for the Firefox Nightly channel. Takes the following arguments: \n \
+  desc "Produces a build signed for TestFlight for the provided channel. Takes the following arguments: \n \
+  :channel              the channel for which to produce a build for \n \
   :build                the build number for this build. Defaults to current build number \n \
   :version              the version number for this build. Defaults to current version number \n \
   :branch               the branch to build (will create if doesn't already exist. A new branch with a predictable username will \
@@ -177,11 +158,17 @@ platform :ios do
   :changelog            the path to the changelog for the beta build \n \
   :adjust_environment   the environment to setup Adjust for \n \
   :adjust_app_token     the app token for Adjust"
-  lane :nightly do |options|
+  lane :testflight do |options|
     options = options[:options] || options
-    puts "nightly: #{options}\n"
+    puts "Creating build for \'#{options[:channel]}\' channel with options: #{options}\n"
 
-    ENV["SCHEME"] = "FirefoxNightly"
+    case options[:channel] 
+    when 'nightly'
+      ENV["SCHEME"] = "FirefoxNightly"
+    when 'beta'
+      ENV["SCHEME"] = "FirefoxBeta"
+    when 'production'
+      ENV["SCHEME"] = "Firefox"
 
     setup(options: options,
       localise_only_complete: true)
@@ -218,71 +205,6 @@ platform :ios do
       changelog: changelog)
 
     reset_git_repo()
-  end
-
-  desc "Builds an beta build for the Firefox channel. Takes the following arguments: \n \
-  :build                the build number for this build. Defaults to current build number \n \
-  :version              the version number for this build. Defaults to current version number \n \
-  :branch               the branch to build (will create if doesn't already exist. A new branch with a predictable username will \
-    be created if this is not provided) \n \
-  :base_branch          the branch with off of which the build should be based (current branch if empty) \n \
-  :build_name           the name of the resultant build. Defaults to firefox-ios-l10n-<:version>-<:build>-<timestamp> \n \
-  :username             the Apple ID to use to log into the developer portal for SIGH \n \
-  :localise             if true, the branch will be localised. If absent or false no localisation will occur \n \
-  :changelog            the path to the changelog for the beta build \n \
-  :adjust_environment   the environment to setup Adjust for \n \
-  :adjust_app_token     the app token for Adjust"
-  lane :beta do |options|
-    options = options[:options] || options
-    puts "beta: #{options}\n"
-    setup(options: options,
-      localise_only_complete: true)
-
-    username = options[:username] || "ios-builds@mozilla.com"
-    sh("sigh download_all -u #{username} --output_path '../provisioning-profiles/'")
-
-    scheme = options[:scheme] || "Firefox"
-    gym(scheme: scheme,
-      output_directory: "./builds/",
-      output_name: "#{ENV["BUILD_NAME"]}.ipa",
-      sdk: "iphoneos",
-      clean: true,
-      export_method: "app-store",
-      include_symbols: true,
-      include_bitcode: false,
-      use_legacy_build_api: true)
-
-    changelog = ""
-    if options[:changelog] == true
-      File.open(options[:changelog], "r") do |f|
-        f.each_line do |line|
-          changelog += line
-        end
-      end
-    end
-
-    pilot(ipa: "./builds/#{ENV["BUILD_NAME"]}.ipa",
-      skip_submission: true,
-      changelog: changelog)
-
-    reset_git_repo()
-  end
-
-  desc "Builds an beta build for the Fennec channel. Takes the following arguments: \n \
-  :build            the build number for this build. Defaults to current build number \n \
-  :version          the version number for this build. Defaults to current version number \n \
-  :branch           the branch to build (will create if doesn't already exist. A new branch with a predictable username will \
-    be created if this is not provided) \n \
-  :base_branch      the branch with off of which the build should be based (current branch if empty) \n \
-  :build_name       the name of the resultant build. Defaults to firefox-ios-l10n-<:version>-<:build>-<timestamp> \n \
-  :username         the Apple ID to use to log into the developer portal for SIGH \n \
-  :localise         if true, the branch will be localised. If absent or false no localisation will occur \n \
-  :changelog        the path to the changelog for the beta build"
-  lane :fennec do |options|
-    options = options[:options] || options
-    options[:scheme] = "FennecAurora"
-    puts "fennec: #{options}\n"
-    beta(options: options)
   end
 
   desc "Uploads an ipa. Takes the following arguments: \n \
