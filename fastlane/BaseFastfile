@@ -208,6 +208,11 @@ platform :ios do
       end
     end
 
+    add_git_tag(
+      tag: ENV["BUILD_NAME"]
+    )
+    push_git_tags()
+
     pilot(ipa: "./builds/#{ENV["BUILD_NAME"]}.ipa",
       skip_submission: true,
       changelog: changelog)
