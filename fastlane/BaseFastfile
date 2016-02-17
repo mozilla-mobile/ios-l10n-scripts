@@ -156,22 +156,22 @@ platform :ios do
     # Use enterprise bundle identifier
     update_info_plist(
       plist_path: 'Client/Info.plist',
-      app_identifier: "$(MOZ_ENTERPRISE_BUNDLE_ID)" 
+      app_identifier: "$(MOZ_BUNDLE_ID).enterprise" 
     )
 
     update_info_plist(
       plist_path: 'Extensions/ViewLater/Info.plist',
-      app_identifier: "$(MOZ_ENTERPRISE_BUNDLE_ID).$(PRODUCT_NAME:rfc1034identifier)"
+      app_identifier: "$(MOZ_BUNDLE_ID).$(PRODUCT_NAME:rfc1034identifier).enterprise"
     )
 
     update_info_plist(
       plist_path: 'Extensions/ShareTo/Info.plist',
-      app_identifier: "$(MOZ_ENTERPRISE_BUNDLE_ID).$(PRODUCT_NAME:rfc1034identifier)"
+      app_identifier: "$(MOZ_BUNDLE_ID).$(PRODUCT_NAME:rfc1034identifier).enterprise"
     )
 
     update_info_plist(
       plist_path: 'Extensions/SendTo/Info.plist',
-      app_identifier: "$(MOZ_ENTERPRISE_BUNDLE_ID).$(PRODUCT_NAME:rfc1034identifier)"
+      app_identifier: "$(MOZ_BUNDLE_ID).$(PRODUCT_NAME:rfc1034identifier).enterprise"
     )
 
     gym(scheme: ENV["SCHEME"],
