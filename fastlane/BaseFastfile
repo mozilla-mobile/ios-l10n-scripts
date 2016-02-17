@@ -189,7 +189,7 @@ platform :ios do
     username = options[:username] || "ios-builds@mozilla.com"
     sh("sigh download_all -u #{username} --output_path '../provisioning-profiles/'")
 
-    gym(scheme: ENV["FirefoxNightly"],
+    gym(scheme: ENV["SCHEME"],
       output_directory: "./builds/",
       output_name: "#{ENV["BUILD_NAME"]}.ipa",
       sdk: "iphoneos",
