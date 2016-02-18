@@ -1,52 +1,59 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 if [ ! -d Client.xcodeproj ]; then
-  echo "Please run this from the project root that contains Client.xcodeproj"
-  exit 1
+    echo "Please run this from the project root that contains Client.xcodeproj"
+    exit 1
 fi
 
-# using svn export to get a version of the git repo so we can use --force to make rerunning easy
-# and it also allows us to ensure that the repo doesn't get treated as a submodule byt git
+# Using svn export to get a version of the Git repo so we can use --force
+# to make rerunning easy and it also allows us to ensure that the repo
+# doesn't get treated as a submodule by Git
 echo "Creating firefox-ios-l10n Git repo"
 svn export --force https://github.com/mozilla-l10n/firefoxios-l10n/trunk firefox-ios-l10n || exit 1
 
-#
-# TODO Add incomplete locales here that are NOT to be included.
-# TODO Look at https://l10n.mozilla-community.org/~flod/webstatus/?product=firefox-ios to find out which locales are not at 100%
-#
+# Store current relative path to the script
+script_path=$(dirname "$0")
 
-INCOMPLETE_LOCALES=(
-    "ar"
-    "bn-IN"
-    "da"
-    "el"
-    "gl"
-    "ml"
-    "ms"
-    "my"
-    "or"
-)
+if [ "$1" == "--release" ]
+then
+    # Get the list of shipping locales. File is in the root of the main
+    # firefox-ios code repository
+    shipping_locales=$(cat shipping_locales.txt)
 
-if [ "$1" == "--only-complete" ]; then
-  for i in "${!INCOMPLETE_LOCALES[@]}"; do
-    echo "Removing incomplete locale ${INCOMPLETE_LOCALES[$i]}"
-    rm -rf "firefox-ios-l10n/${INCOMPLETE_LOCALES[$i]}"
-  done
+    # Get the list of folders within the Git l10n clone and remove those
+    # not available in shipping locales.
+    for folder in firefox-ios-l10n/*/
+    do
+        shipping_locale=false
+        for locale in ${shipping_locales}
+        do
+            if [[ "firefox-ios-l10n/${locale}/" == ${folder} ]]
+            then
+                # This is a shipping locale, I can stop searching
+                shipping_locale=true
+                break
+            fi
+        done
+
+        if ! ${shipping_locale}
+        then
+            # Locale is not in shipping_locales.txt
+            echo "Removing non shipping locale: ${folder}"
+            rm -rf "${folder}"
+        fi
+    done
 fi
 
-BASEDIR=$(dirname "$0")
-
-# Cleanup files (remove unwanted sections, map sv-SE to sv)
-$BASEDIR/update-xliff.py firefox-ios-l10n || exit 1
+# Clean up files (remove unwanted sections, map sv-SE to sv)
+${script_path}/update-xliff.py firefox-ios-l10n || exit 1
 
 # Remove unwanted sections like Info.plist files and $(VARIABLES)
-$BASEDIR/xliff-cleanup.py firefox-ios-l10n/*/*.xliff || exit 1
+${script_path}/xliff-cleanup.py firefox-ios-l10n/*/*.xliff || exit 1
 
-# Export xliff files to individual .strings files
+# Export XLIFF files to individual .strings files
 rm -rf localized-strings || exit 1
 mkdir localized-strings || exit 1
-$BASEDIR/xliff-to-strings.py firefox-ios-l10n localized-strings|| exit 1
+${script_path}/xliff-to-strings.py firefox-ios-l10n localized-strings|| exit 1
 
 # Modify the Xcode project to reference the strings files we just created
-$BASEDIR/strings-import.py Client.xcodeproj localized-strings || exit 1
-
+${script_path}/strings-import.py Client.xcodeproj localized-strings || exit 1
