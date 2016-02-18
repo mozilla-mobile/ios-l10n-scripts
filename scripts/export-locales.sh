@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 #
 # Assumes the following is installed:
@@ -8,26 +8,49 @@
 #  python via brew
 #  virtualenv via pip in brew
 #
+# Call as ./export-locale.sh clean to remove an existing virtual env
+#
 # We can probably check all that for the sake of running this hands-free
 # in an automated manner.
 #
 
-if [ ! -d Client.xcodeproj ]; then
+clean_run=false
+if [ $# -gt 0 ]
+then
+    if [ "$1" == "clean" ]
+    then
+        clean_run=true
+    else
+        echo "Unknown parameter: $1"
+        exit 1
+    fi
+fi
+
+if [ ! -d Client.xcodeproj ]
+then
   echo "Please run this from the project root that contains Client.xcodeproj"
   exit 1
 fi
 
-if [ -d firefox-ios-l10n ]; then
+if [ -d firefox-ios-l10n ]
+then
   echo "There already is a firefox-ios-l10n checkout. Aborting to let you decide what to do."
   exit 1
 fi
 
-# Create a virtualenv with the python modules that we need
-rm -rf export-locales-env || exit 1
-virtualenv export-locales-env || exit 1
-source export-locales-env/bin/activate || exit 1
-brew install libxml2 || exit 1
-STATIC_DEPS=true pip install lxml || exit 1
+# If the virtualenv with the Python modules that we need doesn't exist,
+# or a clean run was requested, create the virtualenv.
+if [ ! -d export-locales-env ] || [ "${clean_run}" = true ]
+then
+    rm -rf export-locales-env || exit 1
+    echo "Setting up new virtualenv..."
+    virtualenv export-locales-env || exit 1
+    source export-locales-env/bin/activate || exit 1
+    brew install libxml2 || exit 1
+    STATIC_DEPS=true pip install lxml || exit 1
+else
+    echo "Reusing existing virtualenv found in export-locales-env"
+fi
 
 # Check out a clean copy of the l10n repo
 git clone https://github.com/mozilla-l10n/firefoxios-l10n firefox-ios-l10n || exit 1
@@ -36,19 +59,47 @@ git clone https://github.com/mozilla-l10n/firefoxios-l10n firefox-ios-l10n || ex
 rm -f /tmp/en.xliff || exit 1
 xcodebuild -exportLocalizations -localizationPath /tmp -project Client.xcodeproj -exportLanguage en || exit 1
 
-if [ ! -f /tmp/en.xliff ]; then
+if [ ! -f /tmp/en.xliff ]
+then
   echo "Export failed. No /tmp/en.xliff generated."
   exit 1
 fi
 
-# Copy the english base back into the repo
-cp /tmp/en.xliff firefox-ios-l10n/en-US/firefox-ios.xliff || exit 1
+# Create a branch in the repository
+cd firefox-ios-l10n
+branch_name=$(date +"%Y%m%d_%H%M")
+git branch ${branch_name}
+git checkout ${branch_name}
 
-# Copy the english base back into the templates and clean it up
-cp /tmp/en.xliff firefox-ios-l10n/templates/firefox-ios.xliff || exit 1
+# Copy the English XLIFF file into the repository and commit
+cp /tmp/en.xliff en-US/firefox-ios.xliff || exit 1
+git add en-US/firefox-ios.xliff
+git commit -m "en-US: update firefox-ios.xliff"
 
-# Update all locales (including 'templates')
-../firefox-ios-build-tools/scripts/update-xliff.py firefox-ios-l10n || exit 1
+# Update all locales
+../../firefox-ios-build-tools/scripts/update-xliff.py . || exit 1
 
+# Commit each locale separately
+locale_list=$(find . -mindepth 1 -maxdepth 1 -type d  \( ! -iname ".*" \) | sed 's|^\./||g' | sort)
+for locale in ${locale_list};
+do
+    # Exclude en-US and templates
+    if [ "${locale}" != "en-US" ] && [ "${locale}" != "templates" ]
+    then
+        git add ${locale}/firefox-ios.xliff
+        git commit -m "${locale}: Update firefox-ios.xliff"
+    fi
+done
+
+# Copy the en-US file in /templates
+cp en-US/firefox-ios.xliff templates/firefox-ios.xliff || exit 1
 # Clean up /templates removing target-language and translations
-../firefox-ios-build-tools/scripts/clean-xliff.py firefox-ios-l10n/templates || exit 1
+../../firefox-ios-build-tools/scripts/clean-xliff.py templates || exit 1
+git add templates/firefox-ios.xliff
+git commit -m "templates: update firefox-ios.xliff"
+
+# Push to remote
+# git push origin ${branch_name}
+
+# Move back to the main folder
+cd ..
