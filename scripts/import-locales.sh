@@ -34,16 +34,19 @@ if [ "$1" == "--only-complete" ]; then
   done
 fi
 
+BASEDIR=$(dirname "$0")
+
 # Cleanup files (remove unwanted sections, map sv-SE to sv)
-scripts/update-xliff.py firefox-ios-l10n || exit 1
+$BASEDIR/update-xliff.py firefox-ios-l10n || exit 1
 
 # Remove unwanted sections like Info.plist files and $(VARIABLES)
-scripts/xliff-cleanup.py firefox-ios-l10n/*/*.xliff || exit 1
+$BASEDIR/xliff-cleanup.py firefox-ios-l10n/*/*.xliff || exit 1
 
 # Export xliff files to individual .strings files
 rm -rf localized-strings || exit 1
 mkdir localized-strings || exit 1
-scripts/xliff-to-strings.py firefox-ios-l10n localized-strings|| exit 1
+$BASEDIR/xliff-to-strings.py firefox-ios-l10n localized-strings|| exit 1
 
 # Modify the Xcode project to reference the strings files we just created
-scripts/strings-import.py Client.xcodeproj localized-strings || exit 1
+$BASEDIR/strings-import.py Client.xcodeproj localized-strings || exit 1
+
