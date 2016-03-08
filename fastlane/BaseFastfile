@@ -186,7 +186,7 @@ platform :ios do
     username = options[:username] || "ios-builds@mozilla.com"
     sh("sigh download_all -u #{username} --output_path '../provisioning-profiles/'")
 
-    scheme = options[:scheme] || "Firefox"
+    scheme = options[:scheme] || "FirefoxBeta"
     gym(scheme: scheme,
       output_directory: "./builds/",
       output_name: "#{ENV["BUILD_NAME"]}.ipa",
