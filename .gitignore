@@ -1,2 +1,5 @@
 # fastlane
 fastlane/report.xml
+
+# Python
+*.pyc
