@@ -51,7 +51,7 @@ platform :ios do
 
     if opts[:localise] || false
       # import locales
-      only_complete = options[:localise_only_complete] || false ? "--only-complete" : ""
+      only_complete = options[:localise_only_complete] || false ? "--release" : ""
       sh("../scripts/localise.sh #{only_complete}")
     end
 
