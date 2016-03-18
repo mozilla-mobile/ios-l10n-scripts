@@ -50,15 +50,21 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('base_folder', help='Path to folder including subfolders for all locales')
+    parser.add_argument('locales', default='*', nargs='*', help='Locales to process (default: %(default)s)')
     args = parser.parse_args()
 
     # Get a list of files to update (absolute paths)
     base_folder = os.path.realpath(args.base_folder)
     file_paths = []
-    for xliff_path in glob(base_folder + '/*/' + xliff_filename):
-        parts = xliff_path.split(os.sep)
-        if not parts[-2] in excluded_locales:
-            file_paths.append(xliff_path)
+    if args.locales == '*':
+        for xliff_path in glob(base_folder + '/*/' + xliff_filename):
+            parts = xliff_path.split(os.sep)
+            if not parts[-2] in excluded_locales:
+                file_paths.append(xliff_path)
+    else:
+        for locale in args.locales:
+            if locale not in excluded_locales:
+                file_paths.append(base_folder + '/' + locale + '/' + xliff_filename)
     file_paths.sort()
 
     for file_path in file_paths:
