@@ -14,6 +14,7 @@ TARGETS = {
     "Client":    {"path": "Client"},
     "ShareTo":   {"path": "Extensions/ShareTo"},
     "SendTo":    {"path": "Extensions/SendTo"},
+    "Today":     {"path": "Extensions/Today"},
     "ViewLater": {"path": "Extensions/ViewLater"},
     "Shared":    {"path": "Shared"},
 }

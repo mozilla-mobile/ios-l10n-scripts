@@ -25,6 +25,7 @@ NS = {'x':'urn:oasis:names:tc:xliff:document:1.2'}
 FILES_TO_KEEP = ('Client/Info.plist',
                  'Extensions/ShareTo/Info.plist',
                  'Extensions/SendTo/Info.plist',
+                 'Extensions/Today/Info.plist',
                  'Extensions/ViewLater/Info.plist')
 
 STRINGS_TO_REMOVE = ('CFBundleDisplayName',
