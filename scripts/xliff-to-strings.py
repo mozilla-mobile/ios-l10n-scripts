@@ -53,6 +53,7 @@ FILES = [
     "Client/SendTo.strings",
     "Extensions/SendTo/Info.plist",
     "Extensions/ShareTo/ShareTo.strings",
+    "Extensions/Today/Today.strings",
     "Extensions/ViewLater/Info.plist",
     "Shared/Localizable.strings",
 ]
