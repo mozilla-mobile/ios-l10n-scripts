@@ -13,18 +13,18 @@ module Fastlane
     class ConfigureAdjustAction < Action
       def self.run(params)
         Helper.log.info "Configuring Adjust for:"
-        Helper.log.info "  Target:      #{params[:target]} "
+        Helper.log.info "  Config:      #{params[:config]} "
         Helper.log.info "  Environment: #{params[:environment]} "
         Helper.log.info "  App Token:   #{params[:app_token]} "
 
         environmentKey = "ADJUST_ENVIRONMENT"
         appTokenKey = "ADJUST_APP_TOKEN"
-        
+
         # TODO(sleroux):  Ugh, regex. Replace with .xcconfig file parser if I can find one.
         environmentRegex = "\\(^#{environmentKey}.*\\)"
         appTokenRegex = "\\(^#{appTokenKey}.*\\)"
 
-        xcconfigFilename = "Client/Configuration/#{params[:target]}.xcconfig"
+        xcconfigFilename = "Client/Configuration/#{params[:config]}.xcconfig"
 
         sh("sed -i '' 's/#{environmentRegex}/#{environmentKey} = #{params[:environment]}/g' #{xcconfigFilename}")
         sh("sed -i '' 's/#{appTokenRegex}/#{appTokenKey} = #{params[:app_token]}/g' #{xcconfigFilename}")
@@ -45,15 +45,15 @@ module Fastlane
       end
 
       def self.available_options
-        # Define all options your action supports. 
-        
+        # Define all options your action supports.
+
         # Below a few examples
         [
-          FastlaneCore::ConfigItem.new(key: :target,
-                                       env_name: "FL_CONFIGURE_ADJUST_TARGET_NAME", # The name of the environment variable
+          FastlaneCore::ConfigItem.new(key: :config,
+                                       env_name: "FL_CONFIGURE_ADJUST_CONFIG_NAME", # The name of the environment variable
                                        description: "Name of the .xcconfig to configure Adjust with", # a short description of this parameter),
                                        is_string: true,
-                                       optional: false 
+                                       optional: false
                                        ),
           FastlaneCore::ConfigItem.new(key: :environment,
                                        env_name: "FL_CONFIGURE_ADJUST_ENVIRONMENT_NAME",
@@ -82,13 +82,13 @@ module Fastlane
 
       def self.is_supported?(platform)
         # you can do things like
-        # 
+        #
         #  true
-        # 
+        #
         #  platform == :ios
-        # 
+        #
         #  [:ios, :mac].include?(platform)
-        # 
+        #
 
         platform == :ios
       end

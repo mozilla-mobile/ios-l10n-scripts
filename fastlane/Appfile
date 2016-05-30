@@ -1,16 +1,38 @@
+# Old
+
 app_identifier "org.mozilla.ios.Firefox" # The bundle identifier of your app
 team_id '43AQ936H96'
 
+for_lane :enterprise do
+  team_id '9G8J6YA743'
+end
+
 for_lane :aurora do
-	team_id '9G8J6YA743' 
+	team_id '9G8J6YA743'
 	app_identifier 'org.mozilla.ios.FennecAurora'
 end
 
 for_lane :l10n do
-	team_id '9G8J6YA743' 
+	team_id '9G8J6YA743'
 	app_identifier 'org.mozilla.ios.FennecAurora'
 end
 
 for_lane :fennec do
 	app_identifier 'org.mozilla.ios.Fennec'
+end
+
+# New
+
+team_id '43AQ936H96'
+
+for_lane :nightly do
+  app_identifier "org.mozilla.ios.FirefoxNightly"
+end
+
+for_lane :beta do
+  app_identifier "org.mozilla.ios.FirefoxBeta" 
+end
+
+for_lane :release do
+  app_identifier "org.mozilla.ios.Firefox"
 end

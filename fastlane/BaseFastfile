@@ -1,18 +1,173 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 fastlane_version "1.39.0"
 
 default_platform :ios
 
-
 platform :ios do
-  before_all do 
+  before_all do
     # make builds & prov profile dirs
     sh("./scripts/mkdirs.sh")
     ensure_git_status_clean()
   end
+
+  after_all do |lane|
+    reset_git_repo(force: true)
+  end
+
+  error do |lane, exception|
+    reset_git_repo(force: true)
+  end
+
+  desc "Creates a Firefox Nightly build for TestFlight. Takes the following arguments: \"
+  :username           Apple ID to fetch data from iTunes connect and sign builds with."
+  lane :nightly do |options|
+    update_build_number_to_next(username: options[:username])
+
+    build_name = "FirefoxNightly-v#{get_version_number}b#{get_build_number}"
+
+    add_badge(color: "blue")
+
+    carthage(platform: "iOS", use_binaries: false)
+
+    sh("../scripts/localise.sh")
+
+    gym(
+      scheme: "FirefoxNightly",
+      output_directory: "./builds/",
+      output_name: "#{build_name}.ipa",
+      sdk: "iphoneos",
+      clean: true,
+      export_method: "app-store",
+      include_symbols: true,
+      include_bitcode: true,
+      use_legacy_build_api: true
+    )
+
+    git_tagify(
+      tag_name: build_name
+    )
+
+    pilot(
+      username: options[:username],
+      ipa: "./builds/#{build_name}.ipa"
+    )
+  end
+
+  desc "Creates a Firefox Beta build for TestFlight. Takes the following arguments: \"
+  :username             Apple ID to fetch data from iTunes connect and sign builds with. \"
+  :adjust_sandbox_key   Adjust API Key for sandbox environment."
+  lane :beta do |options|
+    update_build_number_to_next(username: options[:username])
+
+    build_name = "FirefoxBeta-v#{get_version_number}b#{get_build_number}"
+
+    add_badge(color: "orange")
+
+    carthage(platform: "iOS", use_binaries: false)
+
+    configure_adjust(
+      config: "FirefoxBeta",
+      environment: "sandbox",
+      app_token: options[:adjust_sandbox_key]
+    )
+
+    sh("../scripts/localise.sh")
+
+    gym(
+      scheme: "FirefoxBeta",
+      output_directory: "./builds/",
+      output_name: "#{build_name}.ipa",
+      sdk: "iphoneos",
+      clean: true,
+      export_method: "app-store",
+      include_symbols: true,
+      include_bitcode: true,
+      use_legacy_build_api: true
+    )
+
+    git_tagify(
+      tag_name: build_name
+    )
+
+    pilot(
+      username: options[:username],
+      ipa: "./builds/#{build_name}.ipa",
+      skip_submission: true
+    )
+  end
+
+  desc "Creates a Firefox Release build for TestFlight. Takes the following arguments: \"
+  :username                Apple ID to fetch data from iTunes connect and sign builds with. \"
+  :adjust_production_key   Adjust API Key for production."
+  lane :release do |options|
+    update_build_number_to_next(username: options[:username])
+
+    build_name = "Firefox-v#{get_version_number}b#{get_build_number}"
+
+    carthage(platform: "iOS", use_binaries: false)
+
+    configure_adjust(
+      config: "Firefox",
+      environment: "production",
+      app_token: options[:adjust_production_key]
+    )
+
+    sh("../scripts/localise.sh --release")
+
+    gym(
+      scheme: "Firefox",
+      output_directory: "./builds/",
+      output_name: "#{build_name}.ipa",
+      sdk: "iphoneos",
+      clean: true,
+      export_method: "app-store",
+      include_symbols: true,
+      include_bitcode: true,
+      use_legacy_build_api: true
+    )
+
+    git_tagify(
+      tag_name: build_name
+    )
+
+    pilot(
+      username: options[:username],
+      ipa: "./builds/#{build_name}.ipa",
+      skip_submission: true
+    )
+  end
+
+  desc "Adds the version/build tag on top of the AppIcon. Takes the following arguments: \"
+  :color              The color of the right area of the badge."
+  private_lane :add_badge do |options|
+    badge(
+      shield: "#{get_version_number}-Build%20#{get_build_number}-#{options[:color]}",
+      no_badge: true,
+      shield_no_resize: true
+    )
+  end
+
+  desc "Updates the project's build number to be the next number acceptable by TestFlight. Takes the following arguments: \"
+  :username             Apple ID to use to talk to iTunes Connect with."
+  private_lane :update_build_number_to_next do |options|
+    # Step 1: Update the version and configuration information
+    latest_build_number = latest_testflight_build_number(
+      version: get_version_number,
+      username: options[:username],
+      initial_build_number: 0
+    )
+
+    build_number = latest_build_number + 1
+    increment_build_number(
+      build_number: build_number,
+      xcodeproj: 'Client.xcodeproj'
+    )
+  end
+
+  
 
   private_lane :setup do |options|
     puts "Setup: #{options}\n"
@@ -69,7 +224,7 @@ platform :ios do
       increment_version_number(
         version_number: ENV["APP_VERSION"],
         xcodeproj: 'Client.xcodeproj',
-      ) 
+      )
       version_bumped = true
     end
 
@@ -87,9 +242,9 @@ platform :ios do
 
     if version_bumped == true
       commit_version_bump(
-        message: 'Version Bump', 
-        xcodeproj: 'Client.xcodeproj', 
-      ) 
+        message: 'Version Bump',
+        xcodeproj: 'Client.xcodeproj',
+      )
     end
   end
 
@@ -165,71 +320,6 @@ platform :ios do
     enterprise_build(options: options)
   end
 
-  desc "Builds an beta build for the Firefox channel. Takes the following arguments: \n \
-  :build                the build number for this build. Defaults to current build number \n \
-  :version              the version number for this build. Defaults to current version number \n \
-  :branch               the branch to build (will create if doesn't already exist. A new branch with a predictable username will \
-    be created if this is not provided) \n \
-  :base_branch          the branch with off of which the build should be based (current branch if empty) \n \
-  :build_name           the name of the resultant build. Defaults to firefox-ios-l10n-<:version>-<:build>-<timestamp> \n \
-  :username             the Apple ID to use to log into the developer portal for SIGH \n \
-  :localise             if true, the branch will be localised. If absent or false no localisation will occur \n \
-  :changelog            the path to the changelog for the beta build \n \
-  :adjust_environment   the environment to setup Adjust for \n \
-  :adjust_app_token     the app token for Adjust"
-  lane :beta do |options|
-    options = options[:options] || options
-    puts "beta: #{options}\n"
-    setup(options: options,
-      localise_only_complete: true)
-
-    username = options[:username] || "ios-builds@mozilla.com"
-    sh("sigh download_all -u #{username} --output_path '../provisioning-profiles/'")
-
-    scheme = options[:scheme] || "FirefoxBeta"
-    gym(scheme: scheme,
-      output_directory: "./builds/",
-      output_name: "#{ENV["BUILD_NAME"]}.ipa",
-      sdk: "iphoneos",
-      clean: true,
-      export_method: "app-store",
-      include_symbols: true,
-      include_bitcode: false,
-      use_legacy_build_api: true)
-
-    changelog = ""
-    if options[:changelog] == true
-      File.open(options[:changelog], "r") do |f|
-        f.each_line do |line|
-          changelog += line
-        end
-      end
-    end
-
-    pilot(ipa: "./builds/#{ENV["BUILD_NAME"]}.ipa",
-      skip_submission: true,
-      changelog: changelog)
-
-    reset_git_repo()
-  end
-
-  desc "Builds an beta build for the Fennec channel. Takes the following arguments: \n \
-  :build            the build number for this build. Defaults to current build number \n \
-  :version          the version number for this build. Defaults to current version number \n \
-  :branch           the branch to build (will create if doesn't already exist. A new branch with a predictable username will \
-    be created if this is not provided) \n \
-  :base_branch      the branch with off of which the build should be based (current branch if empty) \n \
-  :build_name       the name of the resultant build. Defaults to firefox-ios-l10n-<:version>-<:build>-<timestamp> \n \
-  :username         the Apple ID to use to log into the developer portal for SIGH \n \
-  :localise         if true, the branch will be localised. If absent or false no localisation will occur \n \
-  :changelog        the path to the changelog for the beta build"
-  lane :fennec do |options|
-    options = options[:options] || options
-    options[:scheme] = "FennecAurora"
-    puts "fennec: #{options}\n"
-    beta(options: options)
-  end
-
   desc "Uploads an ipa. Takes the following arguments: \n \
   :build            the build number for this build \n \
   :version          the version number for this build \n \
@@ -288,7 +378,7 @@ platform :ios do
   :output_directory - the directory to output the snapshots to"
   lane :snapshotL10n do |options|
     if options[:devices]
-      devices = options[:devices].split(",") 
+      devices = options[:devices].split(",")
     else
       devices = ["iPhone 4s", "iPhone 5s", "iPhone 6s", "iPhone 6s Plus", "iPad 2", "iPad Pro"]
     end
@@ -332,7 +422,7 @@ platform :ios do
       output_file = "#{language}/screenshots.html"
       output_links << "<li><a href='#{output_file}'>#{language}</a></li>\n"
       Helper.log.debug "Creating snapshots for #{language} in #{language_dir}/screenshots.html"
-    end 
+    end
     Helper.log.debug "all screenshots: #{output_links}"
     # create (from a template) a new HTML file in options[:output_directory] || "./fastlane/screenshots" to index all language files
     index_html = ""
@@ -345,11 +435,5 @@ platform :ios do
     File.open("#{output_dir}/index.html", 'w') {|f| f.write(index_html) }
     Helper.log.info "Snapshot Index can be found at #{output_dir}/index.html"
     sh("open #{output_dir}/index.html")
-  end
-
-  after_all do |lane|
-  end
-
-  error do |lane, exception|
   end
 end
