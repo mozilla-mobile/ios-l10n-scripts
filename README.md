@@ -29,7 +29,7 @@ After grabbing all of the dependencies, clone down this Github repo. By default,
 
 Before you can start building, you'll need to add your Apple ID and change the Team IDs in the Appfile. The Apple ID and Team ID are used to communicate to the iTunes connect portal to upload and retrieve information about the latest TestFlight submissions.
 
-# Building
+# Building Lanes
 
 To start building Firefox using Fastlane, navigate to the root directory of `firefox-ios` and run any of the following commands:
 
@@ -43,4 +43,10 @@ To start building Firefox using Fastlane, navigate to the root directory of `fir
 
 For both the Beta and Release builds, an API key for use in Adjust (https://www.adjust.com/) for the sandbox and production environments should be passed in as a parameter to the script call.
 
+# Non-Building Lanes
 
+Along with the lanes for building Firefox, there are a few others for marketing/testing purposes:
+
+`fastlane marketing` runs through the app generating screenshots for the App Store.
+
+`fastlane snapshotL10n devices:<> langauges:<> output_directory:<>` runs a series of snapshot tests on all of the devices in each of the given languages. The output of all the snapshots are then placed in the output_directory.
