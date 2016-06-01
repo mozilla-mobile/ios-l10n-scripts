@@ -38,16 +38,18 @@ then
   exit 1
 fi
 
+SDK_PATH=`xcrun --show-sdk-path`
+
 # If the virtualenv with the Python modules that we need doesn't exist,
 # or a clean run was requested, create the virtualenv.
 if [ ! -d export-locales-env ] || [ "${clean_run}" = true ]
 then
     rm -rf export-locales-env || exit 1
     echo "Setting up new virtualenv..."
-    virtualenv export-locales-env || exit 1
-    source export-locales-env/bin/activate || exit 1
-    brew install libxml2 || exit 1
-    STATIC_DEPS=true pip install lxml || exit 1
+    virtualenv python-env --python=python2.7 || exit 1
+    source python-env/bin/activate || exit 1
+    # install libxml2
+    CFLAGS=-I"$SDK_PATH/usr/include/libxml2" LIBXML2_VERSION=2.9.2 pip install lxml || exit 1
 else
     echo "Reusing existing virtualenv found in export-locales-env"
 fi
@@ -98,8 +100,13 @@ cp en-US/firefox-ios.xliff templates/firefox-ios.xliff || exit 1
 git add templates/firefox-ios.xliff
 git commit -m "templates: update firefox-ios.xliff"
 
-# Push to remote
-# git push origin ${branch_name}
+echo
+echo "NOTE"
+echo "NOTE Use the following command to push the branch to Github where"
+echo "NOTE you can create a Pull Request:"
+echo "NOTE"
+echo "NOTE   cd firefox-ios-l10n"
+echo "NOTE   git push --set-upstream origin $branch_name"
+echo "NOTE"
+echo 
 
-# Move back to the main folder
-cd ..
