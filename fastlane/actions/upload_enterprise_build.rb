@@ -2,13 +2,6 @@ require 'fileutils'
 
 module Fastlane
   module Actions
-    module SharedValues
-      ENTERPRISE_UPLOAD_APP_VERSION = :ENTERPRISE_UPLOAD_APP_VERSION
-      ENTERPRISE_UPLOAD_DATESTAMP = :ENTERPRISE_UPLOAD_DATESTAMP
-      ENTERPRISE_UPLOAD_BUILD_VERSION = :ENTERPRISE_UPLOAD_BUILD_VERSION
-      ENTERPRISE_UPLOAD_BUILD_FLAVOUR = :ENTERPRISE_UPLOAD_BUILD_FLAVOUR
-    end
-
     # To share this integration with the other fastlane users:
     # - Fork https://github.com/KrauseFx/fastlane
     # - Clone the forked repository
@@ -19,13 +12,13 @@ module Fastlane
       # requires plist, html & release notes location, ipa, upload host, upload URL, username, password
       def self.run(params)
         
-        app_version = ENV["APP_VERSION"]
+        app_version = params[:version]
         Helper.log.debug "App version: #{app_version}"
-        build_version = ENV["BUILD_VERSION"]
+        build_version = params[:build]
         Helper.log.debug "Build version: #{build_version}"
-        datestamp = ENV["DATESTAMP"]
+        datestamp = params[:datestamp]
         Helper.log.debug "Datestamp: #{datestamp}"
-        build_flavour = ENV["BUILD_FLAVOUR"]
+        build_flavour = params[:scheme]
         Helper.log.debug "Build flavour: #{build_flavour}"
 
         # read in plist, html & release notes files
@@ -116,10 +109,38 @@ ssh #{params[:host]} 'ln -sf #{params[:upload_location]}/#{html_file_name} #{par
       end
 
       def self.available_options
-        # Define all options your action supports. 
-        
+        # Define all options your action supports.
+
         # Below a few examples
         [
+          FastlaneCore::ConfigItem.new(key: :scheme,
+                                       env_name: "FL_UPLOAD_ENTERPRISE_BUILD_SCHEME", # The name of the environment variable
+                                       description: "Build Scheme", # a short description of this parameter
+                                       verify_block: proc do |value|
+                                          raise "No scheme provided, pass using `scheme: 'scheme'`".red unless (value and not value.empty?)
+                                          # raise "Couldn't find file at path '#{value}'".red unless File.exist?(value)
+                                       end),
+          FastlaneCore::ConfigItem.new(key: :datestamp,
+                                       env_name: "FL_UPLOAD_ENTERPRISE_BUILD_DATESTAMP", # The name of the environment variable
+                                       description: "Datestamp", # a short description of this parameter
+                                       verify_block: proc do |value|
+                                          raise "No datastamp provided, pass using `datastamp: 'datastamp'`".red unless (value and not value.empty?)
+                                          # raise "Couldn't find file at path '#{value}'".red unless File.exist?(value)
+                                       end),
+          FastlaneCore::ConfigItem.new(key: :build,
+                                       env_name: "FL_UPLOAD_ENTERPRISE_BUILD_NUMBER", # The name of the environment variable
+                                       description: "Build number", # a short description of this parameter
+                                       verify_block: proc do |value|
+                                          raise "No build number provided, pass using `build: 'build number'`".red unless (value and not value.empty?)
+                                          # raise "Couldn't find file at path '#{value}'".red unless File.exist?(value)
+                                       end),
+          FastlaneCore::ConfigItem.new(key: :version,
+                                       env_name: "FL_UPLOAD_ENTERPRISE_BUILD_VERSION", # The name of the environment variable
+                                       description: "Version number", # a short description of this parameter
+                                       verify_block: proc do |value|
+                                          raise "No version number provided, pass using `version: 'version number'`".red unless (value and not value.empty?)
+                                          # raise "Couldn't find file at path '#{value}'".red unless File.exist?(value)
+                                       end),
           FastlaneCore::ConfigItem.new(key: :plist,
                                        env_name: "FL_UPLOAD_ENTERPRISE_BUILD_PLIST_LOCATION", # The name of the environment variable
                                        description: "Location for plist template", # a short description of this parameter
