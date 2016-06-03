@@ -82,7 +82,7 @@ module Fastlane
         # upload ipa, plist & html files to upload_url
         Helper.log.info "Uploading to #{params[:host]}:#{params[:upload_location]}"
         command = "scp #{assets_dir}/#{html_file_name} #{params[:host]}:#{params[:upload_location]}/#{html_file_name} || exit 1\n \
-scp #{assets_dir}/#{html_file_name} #{params[:host]}:#{params[:upload_location]}/#{plist_file_name} || exit 1\n \
+scp #{assets_dir}/#{plist_file_name} #{params[:host]}:#{params[:upload_location]}/#{plist_file_name} || exit 1\n \
 scp #{params[:build_location]}/#{params[:build_name]}.ipa #{params[:host]}:#{params[:upload_location]}/builds/#{params[:build_name]}.ipa || exit 1\n \
 scp #{params[:build_location]}/#{params[:build_name]}.app.dSYM.zip #{params[:host]}:#{params[:upload_location]}/builds/#{params[:build_name]}.app.dSYM.zip || exit 1\n \
 

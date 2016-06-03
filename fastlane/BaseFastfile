@@ -189,10 +189,10 @@ platform :ios do
       version: get_version_number,
       build: options[:build],
       datestamp: Time.now.utc.iso8601.gsub(/\W/, ''),
-      scheme: "FennecAurora",
+      scheme: "FennecAurora-L10N", # This is really build_flavour
       plist: "fastlane/templates/FennecAurora-L10N.plist.tmpl",
       html: "fastlane/templates/FennecAurora-L10N.html.tmpl",
-      release_notes: "../release_notes.txt",
+      release_notes: "/dev/null",
       build_location: "builds",
       build_name: build_name,
       host: "people.mozilla.org",
