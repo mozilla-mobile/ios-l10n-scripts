@@ -64,6 +64,9 @@ def main():
                 file_paths.append(xliff_path)
     else:
         for locale in args.locales:
+            if locale in excluded_locales:
+                continue
+
             if os.path.isdir(locale):
                 file_paths.append(os.path.join(base_folder, locale, xliff_filename))
             else:
