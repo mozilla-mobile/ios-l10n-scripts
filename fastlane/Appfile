@@ -1,5 +1,3 @@
-apple_id ""
-
 for_lane :nightly do
   team_id '43AQ936H96'
   app_identifier "org.mozilla.ios.FirefoxNightly"

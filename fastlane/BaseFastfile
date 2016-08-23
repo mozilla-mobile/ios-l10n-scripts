@@ -22,12 +22,7 @@ platform :ios do
 
   desc "Creates a Firefox Nightly build for TestFlight"
   lane :nightly do |options|
-    apple_id = CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
-    team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
-
-    sh("sigh download_all -u #{apple_id} -b #{team_id}")
-
-    update_build_number_to_next(username: apple_id)
+    update_build_number_to_next()
 
     build_name = "FirefoxNightly-v#{get_version_number}b#{get_build_number}"
 
@@ -54,7 +49,6 @@ platform :ios do
     )
 
     pilot(
-      username: apple_id,
       ipa: "./builds/#{build_name}.ipa"
     )
   end
@@ -62,12 +56,7 @@ platform :ios do
   desc "Creates a Firefox Beta build for TestFlight. Takes the following arguments: \"
   :adjust_sandbox_key   Adjust API Key for sandbox environment."
   lane :beta do |options|
-    apple_id = CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
-    team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
-
-    sh("sigh download_all -u #{apple_id} -b #{team_id}")
-
-    update_build_number_to_next(username: apple_id)
+    update_build_number_to_next()
 
     build_name = "FirefoxBeta-v#{get_version_number}b#{get_build_number}"
 
@@ -100,21 +89,14 @@ platform :ios do
     )
 
     pilot(
-      username: apple_id,
-      ipa: "./builds/#{build_name}.ipa",
-      skip_submission: true
+      ipa: "./builds/#{build_name}.ipa"
     )
   end
 
   desc "Creates a Firefox Release build for TestFlight. Takes the following arguments: \"
   :adjust_production_key   Adjust API Key for production."
   lane :release do |options|
-    apple_id = CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
-    team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
-
-    sh("sigh download_all -u #{apple_id} -b #{team_id}")
-
-    update_build_number_to_next(username: apple_id)
+    update_build_number_to_next()
 
     build_name = "Firefox-v#{get_version_number}b#{get_build_number}"
 
@@ -145,7 +127,6 @@ platform :ios do
     )
 
     pilot(
-      username: apple_id,
       ipa: "./builds/#{build_name}.ipa",
       skip_submission: true
     )
@@ -154,9 +135,6 @@ platform :ios do
   desc "Builds a FennacAurora l10n build. Takes the following arguments: \n \
   :build                the build number for the l10n build."
   lane :l10n do |options|
-    apple_id = CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
-    team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
-
     increment_build_number(
       build_number: options[:build],
       xcodeproj: 'Client.xcodeproj'
@@ -170,8 +148,6 @@ platform :ios do
 
     # This is duplicating the original AppDelegate hack from firefox-ios-builde copy an l10n specific AppDelegate into the project
     sh("cp templates/FennecAurora-L10N.swift ../Client/Application/AuroraAppDelegate.swift || exit 1")
-
-    sh("sigh download_all -u #{apple_id} -b #{team_id}")
 
     gym(scheme: "FennecAurora",
       output_directory: "./builds/",
@@ -290,7 +266,6 @@ platform :ios do
   private_lane :update_build_number_to_next do |options|
     latest_build_number = latest_testflight_build_number(
       version: get_version_number,
-      username: options[:username],
       initial_build_number: 0
     )
 

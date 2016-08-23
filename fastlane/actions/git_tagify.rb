@@ -25,6 +25,9 @@ module Fastlane
 
         # Restore original branch
         sh("git checkout #{old_branch}")
+
+        # Push newly created tag
+        sh("git push origin #{params[:tag_name]}")
       end
 
       #####################################################
