@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-
 #
 # update-xliff.py <base_l10n_folder>
 #
@@ -14,14 +13,15 @@
 #     the target-language where available on file elements.
 #
 #  3. Store the updated content in existing locale files, without backup.
-#
 
 from glob import glob
 from lxml import etree
 import argparse
 import os
 
+
 NS = {'x':'urn:oasis:names:tc:xliff:document:1.2'}
+
 
 def indent(elem, level=0):
     # Prettify XML output
@@ -39,6 +39,7 @@ def indent(elem, level=0):
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
+
 
 def main():
     # Base parameters, there should be no need to change these unless
@@ -63,18 +64,22 @@ def main():
                 file_paths.append(xliff_path)
     else:
         for locale in args.locales:
+            if locale in excluded_locales:
+                print("Requested locale is in the list of excluded locales: %s" % locale)
+                continue
+
             if os.path.isdir(locale):
                 file_paths.append(os.path.join(base_folder, locale, xliff_filename))
             else:
-                print 'Requested locale doesn\'t exist:', locale
+                print("Requested locale doesn't exist: %s" % locale)
 
     if not file_paths:
-        print 'No locales updated.'
+        print('No locales updated.')
     else:
         file_paths.sort()
 
     for file_path in file_paths:
-        print 'Updating %s' % file_path
+        print('Updating %s' % file_path)
 
         # Read the reference file XML
         reference_tree = etree.parse(os.path.join(base_folder, reference_locale, xliff_filename))
@@ -147,6 +152,7 @@ def main():
                                 pretty_print=True
                             )
             fp.write(xliff_content)
+
 
 if __name__ == '__main__':
     main()
