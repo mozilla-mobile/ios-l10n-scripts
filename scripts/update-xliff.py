@@ -117,13 +117,18 @@ def main():
         for trans_node in reference_root.xpath('//x:trans-unit', namespaces=NS):
             file_name = trans_node.getparent().getparent().get('original')
             source_string = trans_node.xpath('./x:source', namespaces=NS)[0].text
-            string_id = '%s:%s:%s' % (file_name, trans_node.get('id'), hash(source_string))
+            original_id = trans_node.get('id')
+            string_id = '%s:%s:%s' % (file_name, original_id, hash(source_string))
             updated = False
             translated = string_id in translations
             for child in trans_node.xpath('./x:target', namespaces=NS):
                 if translated:
                     # Translation is available, update the target
-                    child.text = translations[string_id]
+                    # If it's a CFBundleShortVersionString, keep the source
+                    if original_id == 'CFBundleShortVersionString':
+                        child.text = source_string
+                    else:
+                        child.text = translations[string_id]
                 else:
                     # No translation available, remove the target
                     child.getparent().remove(child)
@@ -134,6 +139,15 @@ def main():
                 # Create a target node and insert it after source.
                 child = etree.Element('target')
                 child.text = translations[string_id]
+                trans_node.insert(1, child)
+
+            # Try to "autotranslate" CFBundle*
+            if not translated and original_id.startswith('CFBundle'):
+                # Skip if CFBundleDisplayName contains an actual string
+                if original_id == 'CFBundleDisplayName' and not source_string.startswith('$('):
+                    continue
+                child = etree.Element('target')
+                child.text = source_string
                 trans_node.insert(1, child)
 
         # Update target-language where defined
