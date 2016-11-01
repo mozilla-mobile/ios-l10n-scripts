@@ -41,7 +41,8 @@ platform :ios do
       export_method: "app-store",
       include_symbols: true,
       include_bitcode: true,
-      use_legacy_build_api: true
+      use_legacy_build_api: true,
+      toolchain: "swift_2_3"
     )
 
     git_tagify(
@@ -81,7 +82,8 @@ platform :ios do
       export_method: "app-store",
       include_symbols: true,
       include_bitcode: true,
-      use_legacy_build_api: true
+      use_legacy_build_api: true,
+      toolchain: "swift_2_3"
     )
 
     git_tagify(
@@ -119,7 +121,8 @@ platform :ios do
       export_method: "app-store",
       include_symbols: true,
       include_bitcode: true,
-      use_legacy_build_api: true
+      use_legacy_build_api: true,
+      toolchain: "swift_2_3"
     )
 
     git_tagify(
