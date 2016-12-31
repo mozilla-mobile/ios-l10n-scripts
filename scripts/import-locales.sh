@@ -62,7 +62,7 @@ then
 fi
 
 # Clean up files (remove unwanted sections, map sv-SE to sv)
-${script_path}/update-xliff.py firefox-ios-l10n || exit 1
+${script_path}/update-xliff.py firefox-ios-l10n firefox-ios.xliff || exit 1
 
 # Remove unwanted sections like Info.plist files and $(VARIABLES)
 ${script_path}/xliff-cleanup.py firefox-ios-l10n/*/*.xliff || exit 1
