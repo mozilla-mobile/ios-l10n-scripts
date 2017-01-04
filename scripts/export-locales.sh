@@ -8,33 +8,47 @@
 #  python via brew
 #  virtualenv via pip in brew
 #
-# Call as ./export-locale.sh clean to remove an existing virtual env
+# Syntax is:
+# ./export-locales.sh (name of project file) (name of l10n repo) (name of xliff file) [clean]
 #
 # We can probably check all that for the sake of running this hands-free
 # in an automated manner.
 #
 
 clean_run=false
-if [ $# -gt 0 ]
+if [ $# -ge 3 ]
 then
-    if [ "$1" == "clean" ]
+    if [ $# -eq 4 ]
     then
-        clean_run=true
-    else
-        echo "Unknown parameter: $1"
-        exit 1
+        if [ "$4" == "clean" ]
+        then
+            clean_run=true
+        else
+            echo "Unknown parameter: $4"
+            echo "Leave empty to reuse an existing venv, use 'clean' to create a new one"
+            exit 1
+        fi
     fi
+    xcodeproj="$1"
+    l10n_repo="$2"
+    l10n_file="$3"
+else
+    echo "Not enough parameters."
+    echo "Syntax: ./export-locales.sh (name of .xcodeproj file) (name of l10n repo) (name of xliff file) [clean]"
+    echo "Example: ./export-locales.sh Client.xcodeproj firefoxios-l10n firefox-ios.xliff clean"
+    echo "You should call this script via wrappers like export-locales-firefox.sh"
+    exit 1
 fi
 
-if [ ! -d Client.xcodeproj ]
+if [ ! -d ${xcodeproj} ]
 then
-  echo "Please run this from the project root that contains Client.xcodeproj"
+  echo "Please run this from the project root that contains ${xcodeproj}"
   exit 1
 fi
 
-if [ -d firefox-ios-l10n ]
+if [ -d ${l10n_repo} ]
 then
-  echo "There already is a firefox-ios-l10n checkout. Aborting to let you decide what to do."
+  echo "There already is a ${l10n_repo} checkout. Aborting to let you decide what to do."
   exit 1
 fi
 
@@ -55,11 +69,12 @@ else
 fi
 
 # Check out a clean copy of the l10n repo
-git clone https://github.com/mozilla-l10n/firefoxios-l10n firefox-ios-l10n || exit 1
+git clone https://github.com/mozilla-l10n/${l10n_repo} || exit 1
 
 # Export English base to /tmp/en.xliff
 rm -f /tmp/en.xliff || exit 1
-xcodebuild -exportLocalizations -localizationPath /tmp -project Client.xcodeproj -exportLanguage en || exit 1
+echo "Exporting en-US with xcodebuild"
+xcodebuild -exportLocalizations -localizationPath /tmp -project ${xcodeproj} -exportLanguage en || exit 1
 
 if [ ! -f /tmp/en.xliff ]
 then
@@ -68,18 +83,18 @@ then
 fi
 
 # Create a branch in the repository
-cd firefox-ios-l10n
+cd ${l10n_repo}
 branch_name=$(date +"%Y%m%d_%H%M")
 git branch ${branch_name}
 git checkout ${branch_name}
 
 # Copy the English XLIFF file into the repository and commit
-cp /tmp/en.xliff en-US/firefox-ios.xliff || exit 1
-git add en-US/firefox-ios.xliff
-git commit -m "en-US: update firefox-ios.xliff"
+cp /tmp/en.xliff en-US/${l10n_file} || exit 1
+git add en-US/${l10n_file}
+git commit -m "en-US: update ${l10n_file}"
 
 # Update all locales
-../../firefox-ios-build-tools/scripts/update-xliff.py . firefox-ios.xliff || exit 1
+../../firefox-ios-build-tools/scripts/update-xliff.py . ${l10n_file} || exit 1
 
 # Commit each locale separately
 locale_list=$(find . -mindepth 1 -maxdepth 1 -type d  \( ! -iname ".*" \) | sed 's|^\./||g' | sort)
@@ -88,24 +103,24 @@ do
     # Exclude en-US and templates
     if [ "${locale}" != "en-US" ] && [ "${locale}" != "templates" ]
     then
-        git add ${locale}/firefox-ios.xliff
-        git commit -m "${locale}: Update firefox-ios.xliff"
+        git add ${locale}/${l10n_file}
+        git commit -m "${locale}: Update ${l10n_file}"
     fi
 done
 
 # Copy the en-US file in /templates
-cp en-US/firefox-ios.xliff templates/firefox-ios.xliff || exit 1
+cp en-US/${l10n_file} templates/${l10n_file} || exit 1
 # Clean up /templates removing target-language and translations
-../../firefox-ios-build-tools/scripts/clean-xliff.py templates || exit 1
-git add templates/firefox-ios.xliff
-git commit -m "templates: update firefox-ios.xliff"
+../../firefox-ios-build-tools/scripts/clean-xliff.py templates ${l10n_file} || exit 1
+git add templates/${l10n_file}
+git commit -m "templates: update ${l10n_file}"
 
 echo
 echo "NOTE"
 echo "NOTE Use the following command to push the branch to Github where"
 echo "NOTE you can create a Pull Request:"
 echo "NOTE"
-echo "NOTE   cd firefox-ios-l10n"
+echo "NOTE   cd ${l10n_repo}"
 echo "NOTE   git push --set-upstream origin $branch_name"
 echo "NOTE"
 echo

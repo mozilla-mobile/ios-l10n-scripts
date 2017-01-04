@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 #
-# clean-xliff.py <l10n_folder>
+# clean-xliff.py <l10n_folder> <xliff_file>
 #
 # Remove targets from a locale, remove target-language attribute
 #
@@ -31,12 +31,12 @@ def indent(elem, level=0):
             elem.tail = i
 
 def main():
-    xliff_filename = 'firefox-ios.xliff'
-
     parser = argparse.ArgumentParser()
     parser.add_argument('l10n_folder', help='Path to locale folder to clean up')
+    parser.add_argument('xliff_file', help='Name of the XLIFF file, e.g. firefox-ios.xliff')
     args = parser.parse_args()
 
+    xliff_filename = args.xliff_file
     file_path = os.path.join(
                     os.path.realpath(args.l10n_folder),
                     xliff_filename

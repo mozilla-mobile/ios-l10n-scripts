@@ -10,7 +10,7 @@
 # Example:
 #
 #  cd firefox-ios
-#  ./xliff-export.py Client.xcodeproj ../firefox-ios-l10n
+#  ./xliff-export.py Client.xcodeproj ../firefoxios-l10n
 #
 
 import glob

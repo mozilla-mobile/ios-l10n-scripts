@@ -187,7 +187,7 @@ platform :ios do
 
   desc "Takes localization snapshots \
   :devices - a comma separated list of devices to take snapshots on. Defaults to [iPhone 4s, iPhone 5s, iPhone 6s, iPhone 6s Plus, iPad 2, iPad Pro] \
-  :languages - a comma separated list of languages to take snapshots of. Defaults to list of languages in ./firefox-ios-l10n \
+  :languages - a comma separated list of languages to take snapshots of. Defaults to list of languages in ./firefoxios-l10n \
   :output_directory - the directory to output the snapshots to"
   lane :snapshotL10n do |options|
     if options[:devices]
@@ -200,7 +200,7 @@ platform :ios do
       languages = options[:languages].split(",")
     else
       # get the languages from the repo
-      language_options = Dir.entries("../firefox-ios-l10n")
+      language_options = Dir.entries("../firefoxios-l10n")
       languages = []
       for language in language_options
         if language != "templates" && language != "README.md" && language != "." && language != ".."
