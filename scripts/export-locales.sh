@@ -79,7 +79,7 @@ git add en-US/firefox-ios.xliff
 git commit -m "en-US: update firefox-ios.xliff"
 
 # Update all locales
-../../firefox-ios-build-tools/scripts/update-xliff.py . || exit 1
+../../firefox-ios-build-tools/scripts/update-xliff.py . firefox-ios.xliff || exit 1
 
 # Commit each locale separately
 locale_list=$(find . -mindepth 1 -maxdepth 1 -type d  \( ! -iname ".*" \) | sed 's|^\./||g' | sort)
@@ -108,5 +108,4 @@ echo "NOTE"
 echo "NOTE   cd firefox-ios-l10n"
 echo "NOTE   git push --set-upstream origin $branch_name"
 echo "NOTE"
-echo 
-
+echo

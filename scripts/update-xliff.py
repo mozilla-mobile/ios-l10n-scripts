@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# update-xliff.py <base_l10n_folder>
+# update-xliff.py <base_l10n_folder> <xliff_filename> [optional list of locales]
 #
 #  For each folder (locale) available in base_l10n_folder:
 #
@@ -18,6 +18,7 @@ from glob import glob
 from lxml import etree
 import argparse
 import os
+import sys
 
 
 NS = {'x':'urn:oasis:names:tc:xliff:document:1.2'}
@@ -45,20 +46,25 @@ def main():
     # Base parameters, there should be no need to change these unless
     # there are more locales to exclude.
     reference_locale = 'en-US'
-    target_language = 'en'
-    xliff_filename = 'firefox-ios.xliff'
     excluded_locales = ['pl', reference_locale]
 
     parser = argparse.ArgumentParser()
     parser.add_argument('base_folder', help='Path to folder including subfolders for all locales')
+    parser.add_argument('xliff_filename', help='Name of the XLIFF file to process')
     parser.add_argument('locales', nargs='*', help='Locales to process')
     args = parser.parse_args()
 
     # Get a list of files to update (absolute paths)
     base_folder = os.path.realpath(args.base_folder)
+
+    reference_file_path = os.path.join(base_folder, reference_locale, args.xliff_filename)
+    if not os.path.isfile(reference_file_path):
+        print("Requested reference file doesn't exist: %s" % reference_file_path)
+        sys.exit(1)
+
     file_paths = []
     if not args.locales:
-        for xliff_path in glob(base_folder + '/*/' + xliff_filename):
+        for xliff_path in glob(base_folder + '/*/' + args.xliff_filename):
             parts = xliff_path.split(os.sep)
             if not parts[-2] in excluded_locales:
                 file_paths.append(xliff_path)
@@ -69,7 +75,7 @@ def main():
                 continue
 
             if os.path.isdir(locale):
-                file_paths.append(os.path.join(base_folder, locale, xliff_filename))
+                file_paths.append(os.path.join(base_folder, locale, args.xliff_filename))
             else:
                 print("Requested locale doesn't exist: %s" % locale)
 
@@ -81,13 +87,23 @@ def main():
     for file_path in file_paths:
         print('Updating %s' % file_path)
 
-        # Read the reference file XML
-        reference_tree = etree.parse(os.path.join(base_folder, reference_locale, xliff_filename))
-        reference_root = reference_tree.getroot()
+        # Read reference XML file
+        try:
+            reference_tree = etree.parse(reference_file_path)
+            reference_root = reference_tree.getroot()
+        except Exception as e:
+            print("ERROR: Can't parse reference %s file" % reference_locale)
+            print(e)
+            sys.exit(1)
 
-        # Read localized file XML
-        locale_tree = etree.parse(file_path)
-        locale_root = locale_tree.getroot()
+        # Read localized XML file
+        try:
+            locale_tree = etree.parse(file_path)
+            locale_root = locale_tree.getroot()
+        except Exception as e:
+            print("ERROR: Can't parse %s" % file_path)
+            print(e)
+            continue
 
         # Using locale folder as locale code. In some cases we need to map this
         # value to a different locale code
@@ -96,6 +112,7 @@ def main():
         locale_code = file_path.split(os.sep)[-2]
         locale_mapping = {
             'bn-IN': 'bn',
+            'es-ES': 'es',
             'ga-IE': 'ga',
             'nb-NO': 'nb',
             'nn-NO': 'nn',
