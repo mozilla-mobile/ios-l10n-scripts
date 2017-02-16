@@ -111,12 +111,12 @@ def main():
         # See Bug 1193530, Bug 1160467.
         locale_code = file_path.split(os.sep)[-2]
         locale_mapping = {
-            'bn-IN': 'bn',
             'es-ES': 'es',
             'ga-IE': 'ga',
             'nb-NO': 'nb',
             'nn-NO': 'nn',
-            'sv-SE': 'sv'
+            'sv-SE': 'sv',
+            'tl'   : 'fil'
         }
         if locale_code in locale_mapping:
             locale_code = locale_mapping[locale_code]
