@@ -94,7 +94,7 @@ def main():
         except Exception as e:
             print("ERROR: Can't parse reference %s file" % reference_locale)
             print(e)
-            sys.exit(1)
+            continue
 
         # Read localized XML file
         try:

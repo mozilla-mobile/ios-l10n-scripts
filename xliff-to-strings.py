@@ -127,8 +127,13 @@ if __name__ == "__main__":
     for xliff_path in glob.glob(import_root + "/*/firefox-ios.xliff"):
         print "Exporting", xliff_path
         with open(xliff_path) as fp:
-            tree = etree.parse(fp)
-            root = tree.getroot()
+            try:
+                tree = etree.parse(fp)
+                root = tree.getroot()
+            except Exception as e:
+                print("ERROR: Can't parse file %s" % path)
+                print(e)
+                continue
 
             # Make sure there are <file> nodes in this xliff file.
             file_nodes = root.xpath("//x:file", namespaces=NS)
