@@ -54,6 +54,8 @@ fi
 
 SDK_PATH=`xcrun --show-sdk-path`
 
+SCRIPTS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # If the virtualenv with the Python modules that we need doesn't exist,
 # or a clean run was requested, create the virtualenv.
 if [ ! -d export-locales-env ] || [ "${clean_run}" = true ]
@@ -95,7 +97,7 @@ git add en-US/${l10n_file}
 git commit -m "en-US: update ${l10n_file}"
 
 # Update all locales
-../../firefox-ios-build-tools/scripts/update-xliff.py . ${l10n_file} || exit 1
+${SCRIPTS}/update-xliff.py . ${l10n_file} || exit 1
 
 # Commit each locale separately
 locale_list=$(find . -mindepth 1 -maxdepth 1 -type d  \( ! -iname ".*" \) | sed 's|^\./||g' | sort)
@@ -112,7 +114,7 @@ done
 # Copy the en-US file in /templates
 cp en-US/${l10n_file} templates/${l10n_file} || exit 1
 # Clean up /templates removing target-language and translations
-../../firefox-ios-build-tools/scripts/clean-xliff.py templates ${l10n_file} || exit 1
+${SCRIPTS}/clean-xliff.py templates ${l10n_file} || exit 1
 git add templates/${l10n_file}
 git commit -m "templates: update ${l10n_file}"
 
