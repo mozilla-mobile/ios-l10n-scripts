@@ -88,7 +88,10 @@ for lang in $LOCALES; do
         --derived_data_path l10n-screenshots-dd \
         --erase_simulator --localize_simulator \
         -i "11.0.1" --devices "iPhone SE" --languages "$lang" \
-        --output_directory "l10n-screenshots/$lang" > "l10n-screenshots/$lang/snapshot.log" 2>&1
+        --output_directory "l10n-screenshots/$lang" > "l10n-screenshots/$lang/snapshot.txt" 2>&1
+    # Generate the gallery
+    rm -f "l10n-screenshots/$lang/screenshots.html"
+    ../ios-l10n-scripts/gallery.py "l10n-screenshots/$lang" > "l10n-screenshots/$lang/gallery.html"
     # Sync all content, in case one previously failed
     echo "$(date) Syncing screenshots to $REMOTE"
     rsync -avzhe ssh l10n-screenshots/* "$REMOTE" >> ../firefox-ios-l10n-screenshots.log 2>&1
