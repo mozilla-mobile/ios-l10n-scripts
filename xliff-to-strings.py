@@ -63,6 +63,7 @@ FILES = [
 FILENAME_OVERRIDES = {
     "Shared/Supporting Files/Info.plist": "Shared/Localizable.strings",
     "Shared/Supporting Files/Shared.strings": "Client/Shared.strings",
+    "Shared/Supporting Files/Menu.strings": "Client/Menu.strings",
     "Storage.strings": "Client/Storage.strings",
 }
 
