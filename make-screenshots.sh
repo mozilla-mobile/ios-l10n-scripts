@@ -4,7 +4,7 @@
 # Configuration
 #
 
-BRANCH=jhugman/Bug1407702—add-user-state-to-screengraph
+BRANCH=master
 CARTHAGE_BRANCH=screenshots
 REMOTE=fxios@wopr.norad.org:/home/fxios/public_html/screenshots/fxios/v10/
 
@@ -37,10 +37,10 @@ fi
 echo "$(date) Making screenshots for $LOCALES"
 
 #
-# Wipe workspace on every run
+# Wipe workspace and caches on every run
 #
 
-rm -rf firefox-ios-l10n-screenshots
+rm -rf firefox-ios-l10n-screenshots ~/Library/Caches/org.carthage.CarthageKit
 
 #
 # Clone projects
