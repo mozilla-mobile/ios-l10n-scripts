@@ -16,13 +16,13 @@ LOCALES=$*
 if [ $# -eq 0 ]; then
   case "$(hostname)" in
     Builder1.local)
-      LOCALES="af ar ast az bg bn br bs ca cs cy da de dsb el en-GB en-US eo es es-AR es-CL es-MX eu fa fr ga-IE"
+      LOCALES="af an ar ast az bg bn br bs ca cs cy da de dsb el en-GB en-US eo es es-AR es-CL es-MX eu fa fr ga-IE gd"
       ;;
     Builder2.local)
-      LOCALES="gd gl he hi-IN hsb hu hy-AM ia id is it ja kab kk km kn ko lo lt lv ml ms my nb-NO ne-NP nl nn-NO"
+      LOCALES="gl he hi-IN hr hsb hu hy-AM ia id is it ja ka kab kk km kn ko lo lt lv ml ms my nb-NO ne-NP nl"
       ;;
     Builder3.local)
-      LOCALES="or pa-IN pl pt-BR pt-PT rm ro ru ses si sk sl sq sv-SE ta te th tl tr uk ur uz zh-CN zh-TW"
+      LOCALES="nn-NO oc or pa-IN pl pt-BR pt-PT rm ro ru ses si sk sl sq sv-SE ta te th tl tr uk ur uz zh-CN zh-TW"
       ;;
     *)
       echo "Unknown machine, not sure what to do"
