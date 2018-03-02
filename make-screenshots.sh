@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# For running from launchd
+export PATH=$PATH:/usr/local/bin
+
 #
 # Configuration
 #
