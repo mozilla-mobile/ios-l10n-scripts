@@ -83,8 +83,8 @@ for lang in $LOCALES; do
     fastlane snapshot --project Client.xcodeproj --scheme L10nSnapshotTests \
         --skip_open_summary \
         --derived_data_path l10n-screenshots-dd \
-        --erase_simulator --localize_simulator \
-        -i "11.0.1" --devices "iPhone SE" --languages "$lang" \
+        --erase_simulator --localize_simulator --number_of_retries 0 \
+        -i "11.2" --devices "iPhone 8" --languages "$lang" \
         --output_directory "l10n-screenshots/$lang" > "l10n-screenshots/$lang/snapshot.txt" 2>&1
     # Generate the gallery
     rm -f "l10n-screenshots/$lang/screenshots.html"
