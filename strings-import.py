@@ -11,12 +11,13 @@ import sys
 from mod_pbxproj import XcodeProject, PBXFileReference, PBXBuildFile, PBXVariantGroup
 
 TARGETS = {
-    "Client":    {"path": "Client"},
-    "ShareTo":   {"path": "Extensions/ShareTo"},
-    "SendTo":    {"path": "Extensions/SendTo"},
-    "Today":     {"path": "Extensions/Today"},
-    "ViewLater": {"path": "Extensions/ViewLater"},
-    "Shared":    {"path": "Shared"},
+    "Client":              {"path": "Client"},
+    "NotificationService": {"path": "Extensions/NotificationService"},
+    "ShareTo":             {"path": "Extensions/ShareTo"},
+    "SendTo":              {"path": "Extensions/SendTo"},
+    "Today":               {"path": "Extensions/Today"},
+    "ViewLater":           {"path": "Extensions/ViewLater"},
+    "Shared":              {"path": "Shared"},
 }
 
 LOCALES_TO_SKIP = []

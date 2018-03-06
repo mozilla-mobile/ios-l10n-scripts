@@ -52,6 +52,7 @@ FILES = [
     "Client/SendTo.strings",
     "Client/Shared.strings",
     "Client/Storage.strings",
+    "Extensions/NotificationService/Localizable.strings",
     "Extensions/SendTo/Info.plist",
     "Extensions/ShareTo/ShareTo.strings",
     "Extensions/Today/Today.strings",
@@ -74,6 +75,8 @@ FILENAME_OVERRIDES = {
 
 FILES_TO_DUPLICATE = {
     "Client/SendTo.strings": ["Extensions/SendTo/SendTo.strings"],
+    # This is not ideal - but we currently have no good way to extract just the strings for SentTab.*
+    "Client/Localizable.strings": ["Extensions/NotificationService/Localizable.strings"],
 }
 
 def export_xliff_file(file_node, export_path, target_language):
