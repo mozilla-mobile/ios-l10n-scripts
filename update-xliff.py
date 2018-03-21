@@ -46,7 +46,7 @@ def main():
     # Base parameters, there should be no need to change these unless
     # there are more locales to exclude.
     reference_locale = 'en-US'
-    excluded_locales = ['pl', reference_locale]
+    excluded_locales = [reference_locale]
 
     parser = argparse.ArgumentParser()
     parser.add_argument('base_folder', help='Path to folder including subfolders for all locales')
