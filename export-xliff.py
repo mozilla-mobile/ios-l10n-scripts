@@ -19,7 +19,7 @@ import shutil
 import subprocess
 import sys
 
-LOCALES_TO_SKIP = ['pl']
+LOCALES_TO_SKIP = []
 
 def available_locales(l10n_path):
     for xliff_path in glob.glob(l10n_path + "/*/firefox-ios.xliff"):
