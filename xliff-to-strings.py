@@ -20,6 +20,7 @@
 # For any Info.plist file in the xliff, we generate a InfoPlist.strings.
 #
 
+import argparse
 import glob
 import os
 import sys
@@ -114,18 +115,22 @@ def original_path(root, target, original):
 
 if __name__ == "__main__":
 
-    import_root = sys.argv[1]
-    if not os.path.isdir(import_root):
-        print "import path does not exist or is not a directory"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("import_root", help="Path to folder including subfolders for all locales")
+    parser.add_argument("export_root", help="Path to folder used to export .strings files")
+    parser.add_argument("--ignore-errors", help="Ignore parsing errors in localized XLIFF files", action="store_true")
+    args = parser.parse_args()
+
+    if not os.path.isdir(args.import_root):
+        print("import path does not exist or is not a directory")
         sys.exit(1)
 
-    export_root = sys.argv[2]
-    if not os.path.isdir(export_root):
-        print "export path does not exist or is not a directory"
+    if not os.path.isdir(args.export_root):
+        print("export path does not exist or is not a directory")
         sys.exit(1)
 
-    for xliff_path in glob.glob(import_root + "/*/firefox-ios.xliff"):
-        print "Exporting", xliff_path
+    for xliff_path in glob.glob(args.import_root + "/*/firefox-ios.xliff"):
+        print("Exporting {}".format(xliff_path))
         with open(xliff_path) as fp:
             try:
                 tree = etree.parse(fp)
@@ -133,12 +138,13 @@ if __name__ == "__main__":
             except Exception as e:
                 print("ERROR: Can't parse file %s" % path)
                 print(e)
-                continue
+                if not args.ignore_errors:
+                    sys.exit(1)
 
             # Make sure there are <file> nodes in this xliff file.
             file_nodes = root.xpath("//x:file", namespaces=NS)
             if len(file_nodes) == 0:
-                print "  ERROR: No translated files. Skipping."
+                print("  ERROR: No translated files. Skipping.")
                 continue
 
             # Take the target language from the first <file>. Not sure if that
@@ -146,7 +152,7 @@ if __name__ == "__main__":
             # the target-language set.
             target_language = file_nodes[0].get('target-language')
             if not target_language:
-                print "  ERROR: Missing target-language. Skipping."
+                print("  ERROR: Missing target-language. Skipping.")
                 continue
 
             # Export each <file> node as a separate strings file under the
@@ -157,10 +163,10 @@ if __name__ == "__main__":
                 if original in FILES:
                     # Because we have strings files that need to live in multiple bundles
                     # we build a list of export_paths. Start with the default.
-                    export_paths = [original_path(export_root, target_language, original)]
+                    export_paths = [original_path(args.export_root, target_language, original)]
                     for extra_copy in FILES_TO_DUPLICATE.get(original, []):
-                        export_path = original_path(export_root, target_language, extra_copy)
+                        export_path = original_path(args.export_root, target_language, extra_copy)
                         export_paths.append(export_path)
                     for export_path in export_paths:
-                        print "  Writing %s to %s" % (original, export_path)
+                        print("  Writing {} to {}".format(original, export_path))
                         export_xliff_file(file_node, export_path, target_language)

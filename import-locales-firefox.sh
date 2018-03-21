@@ -5,6 +5,18 @@ if [ ! -d Client.xcodeproj ]; then
     exit 1
 fi
 
+ignore_errors=false
+# Check command line parameters
+while [[ $# -gt 0 ]]
+do
+    case $1 in
+        --ignore-errors)
+            ignore_errors=true
+        ;;
+    esac
+    shift
+done
+
 SDK_PATH=`xcrun --show-sdk-path`
 
 # If the virtualenv with the Python modules that we need doesn't exist,
@@ -61,7 +73,7 @@ then
     done
 fi
 
-# Clean up files (remove unwanted sections, map sv-SE to sv)
+# Clean up files (remove unwanted sections, map locale codes)
 ${script_path}/update-xliff.py firefoxios-l10n firefox-ios.xliff || exit 1
 
 # Remove unwanted sections like Info.plist files and $(VARIABLES)
@@ -70,7 +82,12 @@ ${script_path}/xliff-cleanup.py firefoxios-l10n/*/*.xliff || exit 1
 # Export XLIFF files to individual .strings files
 rm -rf localized-strings || exit 1
 mkdir localized-strings || exit 1
-${script_path}/xliff-to-strings.py firefoxios-l10n localized-strings|| exit 1
+if [ "${ignore_errors}" = true ]
+then
+    ${script_path}/xliff-to-strings.py firefoxios-l10n localized-strings --ignore-errors || exit 1
+else
+    ${script_path}/xliff-to-strings.py firefoxios-l10n localized-strings || exit 1
+fi
 
 # Modify the Xcode project to reference the strings files we just created
 ${script_path}/strings-import.py Client.xcodeproj localized-strings || exit 1
