@@ -14,8 +14,6 @@
 #  Client/fr.lproj/Localizable.strings
 #  ShareTo/en-US.lproj/ShareTo.strings
 #  ShareTo/fr.lproj/ShareTo.strings
-#  SendTo/en-US.lproj/SendTo.strings
-#  SendTo/fr.lproj/SendTo.strings
 #
 # For any Info.plist file in the xliff, we generate a InfoPlist.strings.
 #
@@ -50,14 +48,11 @@ FILES = [
     "Client/PrivateBrowsing.strings",
     "Client/Search.strings",
     "Client/SendAnonymousUsageData.strings",
-    "Client/SendTo.strings",
     "Client/Shared.strings",
     "Client/Storage.strings",
     "Extensions/NotificationService/Localizable.strings",
-    "Extensions/SendTo/Info.plist",
     "Extensions/ShareTo/ShareTo.strings",
     "Extensions/Today/Today.strings",
-    "Extensions/ViewLater/Info.plist",
     "Shared/Localizable.strings",
 ]
 
@@ -75,7 +70,6 @@ FILENAME_OVERRIDES = {
 # extension.) See bug 1234322
 
 FILES_TO_DUPLICATE = {
-    "Client/SendTo.strings": ["Extensions/SendTo/SendTo.strings"],
     # This is not ideal - but we currently have no good way to extract just the strings for SentTab.*
     "Client/Localizable.strings": ["Extensions/NotificationService/Localizable.strings"],
 }

@@ -44,9 +44,7 @@ def indent(elem, level=0):
 files_to_keep = [
     'Client/Info.plist',
     'Extensions/ShareTo/Info.plist',
-    'Extensions/SendTo/Info.plist',
-    'Extensions/Today/Info.plist',
-    'Extensions/ViewLater/Info.plist'
+    'Extensions/Today/Info.plist'
 ]
 
 strings_to_remove = [
