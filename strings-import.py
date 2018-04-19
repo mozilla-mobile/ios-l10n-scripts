@@ -13,7 +13,7 @@ from mod_pbxproj import XcodeProject, PBXFileReference, PBXBuildFile, PBXVariant
 TARGETS = {
     "Client":              {"path": "Client"},
     "NotificationService": {"path": "Extensions/NotificationService"},
-    "ShareTo":             {"path": "Extensions/ShareTo"},
+    "ShareTo":             {"path": "Extensions/Share"},
     "Today":               {"path": "Extensions/Today"},
     "Shared":              {"path": "Shared"},
 }

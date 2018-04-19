@@ -43,7 +43,7 @@ def indent(elem, level=0):
 
 files_to_keep = [
     'Client/Info.plist',
-    'Extensions/ShareTo/Info.plist',
+    'Extensions/Share/Info.plist',
     'Extensions/Today/Info.plist'
 ]
 
