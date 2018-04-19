@@ -51,7 +51,7 @@ FILES = [
     "Client/Shared.strings",
     "Client/Storage.strings",
     "Extensions/NotificationService/Localizable.strings",
-    "Extensions/Share/ShareTo.strings",
+    "Extensions/ShareTo/ShareTo.strings",
     "Extensions/Today/Today.strings",
     "Shared/Localizable.strings",
 ]
