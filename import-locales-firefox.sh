@@ -43,6 +43,9 @@ svn export --force https://github.com/mozilla-l10n/firefoxios-l10n/trunk firefox
 # Store current relative path to the script
 script_path=$(dirname "$0")
 
+# Remove the templates directory so that scripts do not have to special case it
+rm -rf firefoxios-l10n/templates
+
 if [ "$1" == "--release" ]
 then
     # Get the list of shipping locales. File is in the root of the main
