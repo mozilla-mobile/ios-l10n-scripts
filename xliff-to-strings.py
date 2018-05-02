@@ -51,7 +51,7 @@ FILES = [
     "Client/Shared.strings",
     "Client/Storage.strings",
     "Extensions/NotificationService/Localizable.strings",
-    "Extensions/ShareTo/ShareTo.strings",
+    "Extensions/ShareTo/Localizable.strings",
     "Extensions/Today/Today.strings",
     "Shared/Localizable.strings",
 ]
@@ -68,10 +68,18 @@ FILENAME_OVERRIDES = {
 # different bundles, we also duplicate some files.(For example
 # SendTo.strings is needed both in the main app and in the SendTo
 # extension.) See bug 1234322
+#
+# This is not ideal - but we currently have no good way to extract just the
+# strings that these extensions need. This copies all strings from the main
+# app's Localizable.strings into the extension bundles. This means the app
+# will grow in size a few 100KB. We should really add a filter function to
+# this list to limit the number of copied strings.
 
 FILES_TO_DUPLICATE = {
-    # This is not ideal - but we currently have no good way to extract just the strings for SentTab.*
-    "Client/Localizable.strings": ["Extensions/NotificationService/Localizable.strings"],
+    "Client/Localizable.strings": [
+        "Extensions/ShareTo/Localizable.strings",
+        "Extensions/NotificationService/Localizable.strings"
+    ],
 }
 
 def export_xliff_file(file_node, export_path, target_language):
