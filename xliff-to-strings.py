@@ -53,6 +53,7 @@ FILES = [
     "Extensions/NotificationService/Localizable.strings",
     "Extensions/ShareTo/Localizable.strings",
     "Extensions/Today/Today.strings",
+    "Extensions/ShareTo/3DTouchActions.strings,
     "Shared/Localizable.strings",
 ]
 
@@ -80,6 +81,9 @@ FILES_TO_DUPLICATE = {
         "Extensions/ShareTo/Localizable.strings",
         "Extensions/NotificationService/Localizable.strings"
     ],
+    "Client/3DTouchActions.strings": [
+        "Extensions/ShareTo/3DTouchActions.strings"
+    ]
 }
 
 def export_xliff_file(file_node, export_path, target_language):
