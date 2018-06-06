@@ -53,7 +53,7 @@ FILES = [
     "Extensions/NotificationService/Localizable.strings",
     "Extensions/ShareTo/Localizable.strings",
     "Extensions/Today/Today.strings",
-    "Extensions/ShareTo/3DTouchActions.strings,
+    "Extensions/ShareTo/3DTouchActions.strings",
     "Shared/Localizable.strings",
 ]
 
