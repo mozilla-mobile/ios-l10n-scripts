@@ -79,6 +79,13 @@ rm -f /tmp/en.xliff || exit 1
 echo "Exporting en-US with xcodebuild"
 xcodebuild -exportLocalizations -localizationPath /tmp -project ${xcodeproj} -exportLanguage en || exit 1
 
+# Fix the Focus export
+/usr/bin/perl -p -i -e "s|Blockzilla/en.lproj/Intro.strings|Blockzilla/Intro.strings|g" /tmp/en.xliff
+/usr/bin/perl -p -i -e "s|Blockzilla/en.lproj/InfoPlist.strings|Blockzilla/InfoPlist.strings|g" /tmp/en.xliff
+/usr/bin/perl -p -i -e "s|Blockzilla/en.lproj/Intro.strings|Blockzilla/Intro.strings|g" /tmp/en.xliff
+/usr/bin/perl -p -i -e "s|ContentBlocker/en.lproj/InfoPlist.strings|ContentBlocker/InfoPlist.strings|g" /tmp/en.xliff
+/usr/bin/perl -p -i -e "s|OpenInFocus/en.lproj/InfoPlist.strings|OpenInFocus/InfoPlist.strings|g" /tmp/en.xliff
+
 if [ ! -f /tmp/en.xliff ]
 then
   echo "Export failed. No /tmp/en.xliff generated."
