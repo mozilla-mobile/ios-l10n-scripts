@@ -9,9 +9,9 @@ export LANG=en_US.UTF-8
 # Configuration
 #
 
-BRANCH=v11.x
+BRANCH=v13.x
 CARTHAGE_BRANCH=screenshots
-REMOTE=fxios@wopr.norad.org:/home/fxios/public_html/screenshots/fxios/v11/
+REMOTE=fxios@wopr.norad.org:/home/fxios/public_html/screenshots/fxios/v13/
 
 #
 # Decide what screenshots to make on this machine
