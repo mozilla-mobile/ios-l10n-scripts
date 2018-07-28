@@ -75,6 +75,11 @@ git clone https://github.com/mozilla-mobile/ios-l10n-scripts.git >> ../firefox-i
 echo "$(date) Importing locales"
 ./ios-l10n-scripts/import-locales-firefox.sh >> ../firefox-ios-l10n-screenshots.log 2>&1
 
+#
+# Update Fastlane
+#
+
+gem install -f fastlane
 
 #
 # Run Fastlane and upload results
