@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # For running from launchd
 export PATH=$PATH:/usr/local/bin
 export LC_ALL=en_US.UTF-8
@@ -21,10 +19,10 @@ LOCALES=$*
 if [ $# -eq 0 ]; then
   case "$(hostname)" in
     Builder1.local)
-      LOCALES="af an ar ast az bg bn br bs ca cs cy da de dsb el en-GB en-US eo es es-AR es-CL es-MX eu fa fr ga-IE gd"
+      LOCALES="af an ar ast az bg bn br bs ca cs cy da de dsb el en-CA en-GB en-US eo es es-AR es-CL es-MX eu fa fr ga-IE gd"
       ;;
     Builder2.local)
-      LOCALES="gl he hi-IN hr hsb hu hy-AM ia id is it ja ka kab kk km kn ko lo lt lv ml ms my nb-NO ne-NP nl"
+      LOCALES="gl he hi-IN hr hsb hu hy-AM ia id is it ja ka kab kk km kn ko lo lt lv ml mr ms my nb-NO ne-NP nl"
       ;;
     Builder3.local)
       LOCALES="nn-NO oc or pa-IN pl pt-BR pt-PT rm ro ru ses si sk sl sq sv-SE ta te th tl tr uk ur uz zh-CN zh-TW"
