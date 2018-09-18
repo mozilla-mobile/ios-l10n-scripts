@@ -83,6 +83,7 @@ xcodebuild -exportLocalizations -localizationPath /tmp -project ${xcodeproj} -ex
 /usr/bin/perl -p -i -e "s|Blockzilla/en.lproj/Intro.strings|Blockzilla/Intro.strings|g" /tmp/en.xliff
 /usr/bin/perl -p -i -e "s|Blockzilla/en.lproj/InfoPlist.strings|Blockzilla/InfoPlist.strings|g" /tmp/en.xliff
 /usr/bin/perl -p -i -e "s|Blockzilla/en.lproj/Intro.strings|Blockzilla/Intro.strings|g" /tmp/en.xliff
+/usr/bin/perl -p -i -e "s|Blockzilla/en.lproj/Intents.strings|Blockzilla/Intents.strings|g" /tmp/en.xliff
 /usr/bin/perl -p -i -e "s|ContentBlocker/en.lproj/InfoPlist.strings|ContentBlocker/InfoPlist.strings|g" /tmp/en.xliff
 /usr/bin/perl -p -i -e "s|OpenInFocus/en.lproj/InfoPlist.strings|OpenInFocus/InfoPlist.strings|g" /tmp/en.xliff
 
