@@ -47,6 +47,7 @@ FILES = [
     "Client/Menu.strings",
     "Client/PrivateBrowsing.strings",
     "Client/Search.strings",
+    "Client/SendTo.strings",
     "Client/SendAnonymousUsageData.strings",
     "Client/Shared.strings",
     "Client/Storage.strings",
