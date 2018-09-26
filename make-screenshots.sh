@@ -92,7 +92,7 @@ for lang in $LOCALES; do
         --skip_open_summary \
         --derived_data_path l10n-screenshots-dd \
         --erase_simulator --localize_simulator --number_of_retries 0 \
-        -i "11.2" --devices "iPhone 8" --languages "$lang" \
+        -i "12.0" --devices "iPhone 8" --languages "$lang" \
         --output_directory "l10n-screenshots/$lang" > "l10n-screenshots/$lang/snapshot.txt" 2>&1
     # Generate the gallery
     rm -f "l10n-screenshots/$lang/screenshots.html"
