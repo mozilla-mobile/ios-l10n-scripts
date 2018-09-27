@@ -55,13 +55,14 @@ cd firefox-ios-l10n-screenshots
 # does not work anymore because of strange Fuzi / libxml errors that I have not been able to explain.
 #
 
-#echo "$(date) Downloading Carthage-$CARTHAGE_BRANCH.bz2"
-#curl -O http://wopr.norad.org/~sarentz/fxios/Carthage-$CARTHAGE_BRANCH.tar.bz2 >> ../firefox-ios-l10n-screenshots.log 2>&1
-#echo "$(date) Extracting Carthage-$CARTHAGE_BRANCH.tar.bz2"
-#tar xfj Carthage-$CARTHAGE_BRANCH.tar.bz2 >> ../firefox-ios-l10n-screenshots.log 2>&1
-
-echo "$(date) Running ./bootstrap.sh"
-./bootstrap.sh >> ../firefox-ios-l10n-screenshots.log 2>&1
+if [ -f "$HOME/Carthage-$BRANCH.tar" ]
+then
+  echo "$(date) Extracting Carthage-$BRANCH.tar"
+  tar xf "$HOME/Carthage-$BRANCH.tar" >> ../firefox-ios-l10n-screenshots.log 2>&1
+else
+  echo "$(date) Running ./bootstrap.sh"
+  ./bootstrap.sh >> ../firefox-ios-l10n-screenshots.log 2>&1
+fi
 
 #
 # Clone the l10n scripts and import locales
