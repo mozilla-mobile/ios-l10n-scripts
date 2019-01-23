@@ -36,7 +36,7 @@ fi
 
 echo "Creating firefoxios-l10n Git repo"
 rm -rf firefoxios-l10n 
-git clone https://github.com/mozilla-l10n/firefoxios-l10n/trunk firefoxios-l10n || exit 1
+git clone --depth 1 https://github.com/mozilla-l10n/firefoxios-l10n firefoxios-l10n || exit 1
 
 # Store current relative path to the script
 script_path=$(dirname "$0")
