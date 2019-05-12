@@ -44,6 +44,8 @@ def indent(elem, level=0):
 files_to_keep = [
     'Client/Info.plist',
     'Extensions/Today/Info.plist'
+    'lockbox-ios/Common/Resources/en.lproj/InfoPlist.strings',
+    'CredentialProvider/en.lproj/InfoPlist.strings'
 ]
 
 strings_to_remove = [
@@ -60,6 +62,7 @@ required_ids = [
     'ShortcutItemTitleNewPrivateTab',
     'ShortcutItemTitleNewTab',
     'ShortcutItemTitleQRCode',
+    'NSFaceIDUsageDescription'
 ]
 
 if __name__ == '__main__':

@@ -4,6 +4,7 @@
 # strings-import.py project.xcodeproj strings-directory
 #
 
+import argparse
 import glob
 import os
 import sys
@@ -16,6 +17,8 @@ TARGETS = {
     "ShareTo":             {"path": "Extensions/ShareTo"},
     "Today":               {"path": "Extensions/Today"},
     "Shared":              {"path": "Shared"},
+    "Firefox Lockbox":     {"path": "lockbox-ios/**"},
+    "CredentialProvider":  {"path": "CredentialProvider/**"}
 }
 
 LOCALES_TO_SKIP = []
@@ -25,12 +28,15 @@ def get_groups(project):
 
 def find_group(project, path):
     for group in project.objects.values():
+        
         if group.get('isa') == 'PBXGroup':
+           # print "find_group ", group, path
             if group.get('path') == path:
                 return group
 
 def find_target(project, name):
     for target in project.get_build_phases('PBXNativeTarget'):
+        #print "Target? ", target['name'], name
         if target['name'] == name:
             return target
 
@@ -47,6 +53,7 @@ def find_resources_phase(project, target):
 
 # TODO This should come from the transformed XLIFF files
 def paths_for_localized_resources(path):
+    #print glob.glob(path + "/*.lproj/*.strings")
     return [path for path in glob.glob(path + "/*.lproj/*.strings")]
 
 # TODO Rewrite to make more robust
@@ -70,8 +77,14 @@ def get_or_add_variant_group(project, name, parent_group, phase):
             if variant_group.get('name') == name and parent_group.has_child(variant_group.id):
                 # If the variantgroup with the name exists and it is part of
                 # our parent group then we assume it has been setup correctly.
+                print "Found variant group " + variant_group.get('name')
+                return variant_group
+            
+            if variant_group.get('name') == name.replace("strings", "storyboard", 1):
+                print "Found a storyboard variant group for " + variant_group.get('name')
                 return variant_group
 
+    print "Creating variant group " + str(name) + " under " + str(parent_group.get('name'))
     variant_group = PBXVariantGroup.Create(name)
     project.objects[variant_group.id] = variant_group
     parent_group.add_child(variant_group)
@@ -85,21 +98,28 @@ def get_or_add_variant_group(project, name, parent_group, phase):
     return variant_group
 
 if __name__ == "__main__":
-    project = XcodeProject.Load("Client.xcodeproj/project.pbxproj")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("xcode_project", help="Location of XCode project")
+    args = parser.parse_args()
+
+    project = XcodeProject.Load(args.xcode_project + "/project.pbxproj")
     if not project:
-        print "Can't open ", "Client.xcodeproj/project.pbxproj"
+        print "Can't open ", args.xcode_project + "/project.pbxproj"
         sys.exit(1)
 
     for target_name in TARGETS.keys():
         target = find_target(project, target_name)
         if not target:
             print "Can't find target ", target_name
-            sys.exit(1)
+            continue
 
-        parent_group = find_group(project, target_name)
+        group_name = "lockbox-ios" if target_name == "Firefox Lockbox" else target_name
+        parent_group = find_group(project, group_name)
         if not parent_group:
-            print "Can't find group ", target_name
-            sys.exit(1)
+            print "Can't find group ", group_name
+            continue
+
+        print "found ", target_name
 
         phase = find_resources_phase(project, target)
         if not phase:
