@@ -53,7 +53,15 @@ def find_resources_phase(project, target):
 
 # TODO This should come from the transformed XLIFF files
 def paths_for_localized_resources(path):
-    #print glob.glob(path + "/*.lproj/*.strings")
+    paths = []
+    # for path in glob.glob(path + "*.lproj/*.strings"):
+    #     print path
+    #     paths.append(path)
+    # for path in glob.glob(path + "/*.lproj/*.strings", recursive=True):
+    #     print path
+    #     paths.append(path)
+
+    # return paths
     return [path for path in glob.glob(path + "/*.lproj/*.strings")]
 
 # TODO Rewrite to make more robust

@@ -127,6 +127,9 @@ def original_path(root, target, original):
         # lockbox-ios/Storyboard/de.lproj/SetupAutofill.strings
         dir = dir.replace("Base.lproj", "")
         file = file.replace(".storyboard", ".strings")
+    elif file.endswith(".xib"):
+        dir = dir.replace("Base.lproj", "")
+        file = file.replace(".xib", ".strings")
 
     lproj = "%s.lproj" % target_language
     path = dir + "/" + lproj + "/" + file
