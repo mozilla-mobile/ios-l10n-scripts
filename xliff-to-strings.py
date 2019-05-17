@@ -183,7 +183,7 @@ if __name__ == "__main__":
             for file_node in file_nodes:
                 original = file_node.get('original')
                 original = FILENAME_OVERRIDES.get(original, original)
-                if original in FILES or True: # FIXME
+                if original in FILES or args.import_root == "lockwiseios-l10n":
                     # Because we have strings files that need to live in multiple bundles
                     # we build a list of export_paths. Start with the default.
                     export_paths = [original_path(args.export_root, target_language, original)]

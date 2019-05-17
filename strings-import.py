@@ -8,6 +8,7 @@ import argparse
 import glob
 import os
 import sys
+import fnmatch
 
 from mod_pbxproj import XcodeProject, PBXFileReference, PBXBuildFile, PBXVariantGroup
 
@@ -28,15 +29,12 @@ def get_groups(project):
 
 def find_group(project, path):
     for group in project.objects.values():
-        
         if group.get('isa') == 'PBXGroup':
-           # print "find_group ", group, path
             if group.get('path') == path:
                 return group
 
 def find_target(project, name):
     for target in project.get_build_phases('PBXNativeTarget'):
-        #print "Target? ", target['name'], name
         if target['name'] == name:
             return target
 
@@ -53,16 +51,20 @@ def find_resources_phase(project, target):
 
 # TODO This should come from the transformed XLIFF files
 def paths_for_localized_resources(path):
-    paths = []
-    # for path in glob.glob(path + "*.lproj/*.strings"):
-    #     print path
-    #     paths.append(path)
-    # for path in glob.glob(path + "/*.lproj/*.strings", recursive=True):
-    #     print path
-    #     paths.append(path)
+    paths = [p for p in glob.glob(path + "/*.lproj/*.strings")]
 
-    # return paths
-    return [path for path in glob.glob(path + "/*.lproj/*.strings")]
+    # this script is run with python 2.7 which doesn't support ** in glob searches :(
+    if path.endswith("/**"):
+        paths = []
+        for root, dirnames, filenames in os.walk(path[:-3]):
+            for filename in fnmatch.filter(filenames, '*.strings'):
+                paths.append(os.path.join(root, filename))
+
+        print paths
+        return paths
+    else:
+        return [p for p in glob.glob(path + "/*.lproj/*.strings")]
+
 
 # TODO Rewrite to make more robust
 def locale_name_from_path(path):
@@ -87,9 +89,12 @@ def get_or_add_variant_group(project, name, parent_group, phase):
                 # our parent group then we assume it has been setup correctly.
                 print "Found variant group " + variant_group.get('name')
                 return variant_group
-            
+
             if variant_group.get('name') == name.replace("strings", "storyboard", 1):
                 print "Found a storyboard variant group for " + variant_group.get('name')
+                return variant_group
+
+            if variant_group.get('name') == name.replace("strings", "xib", 1):
                 return variant_group
 
     print "Creating variant group " + str(name) + " under " + str(parent_group.get('name'))
