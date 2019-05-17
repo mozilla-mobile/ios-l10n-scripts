@@ -169,7 +169,8 @@ def main():
 
         # Update target-language where defined
         for file_node in reference_root.xpath('//x:file', namespaces=NS):
-            file_node.set('target-language', locale_code)
+            if file_node.get('target-language'):
+                file_node.set('target-language', locale_code)
 
         # Replace the existing locale file with the new XML content
         with open(file_path, 'w') as fp:
