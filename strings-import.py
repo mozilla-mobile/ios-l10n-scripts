@@ -10,7 +10,7 @@ import os
 import sys
 import fnmatch
 
-from mod_pbxproj import XcodeProject, PBXFileReference, PBXBuildFile, PBXVariantGroup
+from mod_pbxproj import XcodeProject, PBXFileReference, PBXBuildFile, PBXVariantGroup, PBXGroup
 
 TARGETS = {
     "Client":              {"path": "Client"},
@@ -81,23 +81,54 @@ def add_file_reference(project, path, variant_group):
 
     return file_reference
 
+def group_has_child(parent_group, child_id):
+    # if len(parent_group.children) == 0:
+    #     return False
+    if not isinstance(parent_group, PBXGroup):
+        #print "no children in " + parent_group.id
+        return False
+
+    print str(parent_group.id) + " is a group!" + str(len(parent_group['children']))
+
+    for id in parent_group.children:
+        obj = project.objects[id]
+        if obj == child_id:
+            return True
+        if u'children' in parent_group and group_has_child(obj, child_id):
+            return True
+
+    return False
+
+def find_parent_group(project, group_id):
+    for group in get_groups(project):
+        if group.has_child(group_id):
+            return group
+
+    return None
+
+def variant_in_group(project, variant_group_id, parent_group_id):
+    group = find_parent_group(project, variant_group_id)
+    if group:
+        if group.id == parent_group_id:
+            return True
+        return variant_in_group(project, group.id, parent_group_id)
+
+    return False
+
 def get_or_add_variant_group(project, name, parent_group, phase):
+    print "Looking for " + name + " in parent group " + str(parent_group.id) + " | " + str(parent_group.get('name'))
     for variant_group in project.objects.values():
         if variant_group.get('isa') == 'PBXVariantGroup':
-            if variant_group.get('name') == name and parent_group.has_child(variant_group.id):
-                # If the variantgroup with the name exists and it is part of
-                # our parent group then we assume it has been setup correctly.
-                print "Found variant group " + variant_group.get('name')
-                return variant_group
 
-            if variant_group.get('name') == name.replace("strings", "storyboard", 1):
-                print "Found a storyboard variant group for " + variant_group.get('name')
-                return variant_group
-
-            if variant_group.get('name') == name.replace("strings", "xib", 1):
-                return variant_group
-
-    print "Creating variant group " + str(name) + " under " + str(parent_group.get('name'))
+            variant_group_name = variant_group.get('name')
+            if variant_group_name == name or variant_group_name == name.replace("strings", "storyboard", 1) or variant_group_name == name.replace("strings", "xib", 1):
+                # parent_group.has_child only checks one level 
+                # but Localizable.strings is located in lockbox-ios/Common/Resources/Strings
+                if variant_in_group(project, variant_group.id, parent_group.id):
+                    print "Found a variant_group for " + variant_group_name
+                    return variant_group
+                    
+    print "Creating variant group " + str(name) + " under " + str(parent_group.id)
     variant_group = PBXVariantGroup.Create(name)
     project.objects[variant_group.id] = variant_group
     parent_group.add_child(variant_group)
