@@ -18,9 +18,14 @@ TARGETS = {
     "ShareTo":             {"path": "Extensions/ShareTo"},
     "Today":               {"path": "Extensions/Today"},
     "Shared":              {"path": "Shared"},
-    "Firefox Lockbox":     {"path": "lockbox-ios/**"},
+    "Firefox Lockbox":     {"path": "lockbox-ios/**", "groupName": "lockbox-ios"},
     "CredentialProvider":  {"path": "CredentialProvider/**"}
 }
+
+LOCKBOX_TARGETS = [
+    "Firefox Lockbox",
+    "CredentialProvider"
+]
 
 LOCALES_TO_SKIP = []
 
@@ -81,23 +86,17 @@ def add_file_reference(project, path, variant_group):
 
     return file_reference
 
-def group_has_child(parent_group, child_id):
-    # if len(parent_group.children) == 0:
-    #     return False
-    if not isinstance(parent_group, PBXGroup):
-        #print "no children in " + parent_group.id
-        return False
-
-    print str(parent_group.id) + " is a group!" + str(len(parent_group['children']))
-
-    for id in parent_group.children:
+def file_reference_exists(project, path, variant_group):
+    for id in project.get_ids():
         obj = project.objects[id]
-        if obj == child_id:
+        if obj and obj.get('isa') == "PBXFileReference" and obj.get('path') == path:
+            print "Found file reference for " + obj.get('path')
             return True
-        if u'children' in parent_group and group_has_child(obj, child_id):
-            return True
+
+    print "Could not file file reference for " + path
 
     return False
+
 
 def find_parent_group(project, group_id):
     for group in get_groups(project):
@@ -127,7 +126,7 @@ def get_or_add_variant_group(project, name, parent_group, phase):
                 if variant_in_group(project, variant_group.id, parent_group.id):
                     print "Found a variant_group for " + variant_group_name
                     return variant_group
-                    
+
     print "Creating variant group " + str(name) + " under " + str(parent_group.id)
     variant_group = PBXVariantGroup.Create(name)
     project.objects[variant_group.id] = variant_group
@@ -157,7 +156,10 @@ if __name__ == "__main__":
             print "Can't find target ", target_name
             continue
 
-        group_name = "lockbox-ios" if target_name == "Firefox Lockbox" else target_name
+        group_name = target_name
+        if "groupName" in TARGETS[target_name]:
+            group_name = TARGETS[target_name]["groupName"]
+
         parent_group = find_group(project, group_name)
         if not parent_group:
             print "Can't find group ", group_name
@@ -185,6 +187,13 @@ if __name__ == "__main__":
                 # get rid of the xx.lproj part in the exported filenames. (Does not work)
                 c = path.split(os.sep)
                 group_relative_path = c[-2] + "/" + c[-1]
+
+                if target_name in LOCKBOX_TARGETS:
+                    # Lockbox has translations checked into the repo
+                    # first check to see if there is already a reference to that file
+                    print path + "|||" + group_relative_path
+                    if file_reference_exists(project, group_relative_path, variant_group):
+                        continue
 
                 file_reference = add_file_reference(project, group_relative_path, variant_group)
 
