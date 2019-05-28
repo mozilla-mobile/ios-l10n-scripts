@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-if [ ! -d lockbox-ios.xcodeproj ]; then
+if [ ! -d Lockbox.xcodeproj ]; then
     echo "Please run this from the project root that contains lockbox-ios.xcodeproj"
     exit 1
 fi
