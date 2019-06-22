@@ -95,7 +95,7 @@ fi
 /usr/bin/perl -p -i -e "s|OpenInFocus/en.lproj/InfoPlist.strings|OpenInFocus/InfoPlist.strings|g" /tmp/en.xliff
 /usr/bin/perl -p -i -e "s|CredentialProvider/en.lproj/InfoPlist.strings|CredentialProvider/InfoPlist.strings|g" /tmp/en.xliff
 /usr/bin/perl -p -i -e "s|CredentialProvider/en.lproj/Localizable.strings|CredentialProvider/Localizable.strings|g" /tmp/en.xliff
-/usr/bin/perl -p -i -e "s|lockbox-ios/Common/Resources/en.lproj/InfoPlist.strings|lockbox-ios/Common/Resources/InfoPlist.strings|g" /tmp/en.xliff
+/usr/bin/perl -p -i -e "s|lockbox-ios/Common/Resources/Strings/en.lproj/InfoPlist.strings|lockbox-ios/Common/Resources/Strings/InfoPlist.strings|g" /tmp/en.xliff
 /usr/bin/perl -p -i -e "s|lockbox-ios/Common/Resources/Strings/en.lproj/Localizable.strings|lockbox-ios/Common/Resources/Strings/Localizable.strings|g" /tmp/en.xliff
 
 
