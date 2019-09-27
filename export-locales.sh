@@ -76,9 +76,15 @@ git clone https://github.com/mozilla-l10n/${l10n_repo} || exit 1
 
 # Export English base to /tmp/en.xliff
 rm -f /tmp/en.xliff || exit 1
+rm -f  "/tmp/en.xcloc/Localized Contents/en.xliff" # for Xcode >= 10
 echo "Exporting en-US with xcodebuild"
 xcodebuild -exportLocalizations -localizationPath /tmp -project ${xcodeproj} -exportLanguage en || exit 1
-cp "/tmp/en.xcloc/Localized Contents/en.xliff" /tmp/en.xliff || exit 1
+if [ -f "/tmp/en.xcloc/Localized Contents/en.xliff" ]
+then
+  # Xcode >= 10 puts the file in en.xcloc
+  cp "/tmp/en.xcloc/Localized Contents/en.xliff" /tmp/en.xliff || exit 1
+fi
+ 
 
 if [ ! -f /tmp/en.xliff ]
 then
@@ -98,6 +104,8 @@ fi
 /usr/bin/perl -p -i -e "s|lockbox-ios/Common/Resources/en.lproj/InfoPlist.strings|lockbox-ios/Common/Resources/InfoPlist.strings|g" /tmp/en.xliff
 /usr/bin/perl -p -i -e "s|lockbox-ios/Common/Resources/Strings/en.lproj/Localizable.strings|lockbox-ios/Common/Resources/Strings/Localizable.strings|g" /tmp/en.xliff
 
+/usr/bin/perl -p -i -e "s|Shared/Supporting Files/Intro.strings|Client/Intro.strings|g" /tmp/en.xliff
+/usr/bin/perl -p -i -e "s|Shared/Supporting Files/Storage.strings|Storage.strings|g" /tmp/en.xliff
 
 # Create a branch in the repository
 cd ${l10n_repo}
