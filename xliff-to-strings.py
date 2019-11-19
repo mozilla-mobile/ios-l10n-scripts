@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# xliff-export.py l10n-repository export-directory
+# xliff-export.py l10n-repository export-directory xliff-file
 #
 # Convert the l10n repository from the following format:
 #
@@ -120,6 +120,17 @@ def original_path(root, target, original):
     dir,file = os.path.split(original)
     if file == "Info.plist":
         file = "InfoPlist.strings"
+    elif file.endswith(".storyboard"):
+        # For storyboards this is writing to 
+        # lockbox-ios/Storyboard/Base.lproj/de.lproj/SetupAutofill.storyboard 
+        # instead of
+        # lockbox-ios/Storyboard/de.lproj/SetupAutofill.strings
+        dir = dir.replace("Base.lproj", "")
+        file = file.replace(".storyboard", ".strings")
+    elif file.endswith(".xib"):
+        dir = dir.replace("Base.lproj", "")
+        file = file.replace(".xib", ".strings")
+
     lproj = "%s.lproj" % target_language
     path = dir + "/" + lproj + "/" + file
     return path
@@ -129,6 +140,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("import_root", help="Path to folder including subfolders for all locales")
     parser.add_argument("export_root", help="Path to folder used to export .strings files")
+    parser.add_argument("xliff_file", help="Name of xliff file")
     parser.add_argument("--ignore-errors", help="Ignore parsing errors in localized XLIFF files", action="store_true")
     args = parser.parse_args()
 
@@ -140,14 +152,14 @@ if __name__ == "__main__":
         print("export path does not exist or is not a directory")
         sys.exit(1)
 
-    for xliff_path in glob.glob(args.import_root + "/*/firefox-ios.xliff"):
+    for xliff_path in glob.glob(args.import_root + "/*/" + args.xliff_file):
         print("Exporting {}".format(xliff_path))
         with open(xliff_path) as fp:
             try:
                 tree = etree.parse(fp)
                 root = tree.getroot()
             except Exception as e:
-                print("ERROR: Can't parse file %s" % path)
+                print("ERROR: Can't parse file %s" % xliff_path)
                 print(e)
                 if not args.ignore_errors:
                     sys.exit(1)
@@ -171,7 +183,7 @@ if __name__ == "__main__":
             for file_node in file_nodes:
                 original = file_node.get('original')
                 original = FILENAME_OVERRIDES.get(original, original)
-                if original in FILES:
+                if original in FILES or args.import_root == "lockwiseios-l10n":
                     # Because we have strings files that need to live in multiple bundles
                     # we build a list of export_paths. Start with the default.
                     export_paths = [original_path(args.export_root, target_language, original)]
