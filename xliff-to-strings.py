@@ -57,6 +57,8 @@ FILES = [
     "Extensions/ShareTo/3DTouchActions.strings",
     "Extensions/ShareTo/SendTo.strings",
     "Shared/Localizable.strings",
+    "Client/Default Browser.strings",
+    "Client/Today.strings",
 ]
 
 # Because Xcode is unpredictable. See bug 1162510 - Sync.strings are not imported
@@ -64,6 +66,8 @@ FILENAME_OVERRIDES = {
     "Shared/Supporting Files/Info.plist": "Shared/Localizable.strings",
     "Shared/Supporting Files/Shared.strings": "Client/Shared.strings",
     "Shared/Supporting Files/Menu.strings": "Client/Menu.strings",
+    "Shared/Supporting Files/Default Browser.strings": "Client/Default Browser.strings",
+    "Shared/Supporting Files/Today.strings": "Client/Today.strings",
     "Storage.strings": "Client/Storage.strings",
 }
 
