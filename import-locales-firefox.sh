@@ -90,5 +90,6 @@ else
     ${script_path}/xliff-to-strings.py firefoxios-l10n localized-strings || exit 1
 fi
 
+# Update: We have to disable this for v29 and above as we need to add multiple Target Membership to Today.strings but unfortunately that is not supported by mod_pbxproj in strings-import script.
 # Modify the Xcode project to reference the strings files we just created
-${script_path}/strings-import.py Client.xcodeproj localized-strings || exit 1
+# ${script_path}/strings-import.py Client.xcodeproj localized-strings || exit 1
