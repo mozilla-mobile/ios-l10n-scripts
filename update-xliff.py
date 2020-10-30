@@ -117,7 +117,8 @@ def main():
             'nn-NO': 'nn',
             'sv-SE': 'sv',
             'tl'   : 'fil',
-            'zgh'  : 'tzm'
+            'zgh'  : 'tzm',
+            'sat'  : 'sat-Olck'
         }
         if locale_code in locale_mapping:
             locale_code = locale_mapping[locale_code]
