@@ -55,13 +55,12 @@ struct L10NTools: ParsableCommand {
     @Flag(help: "To determine if we should run the export task.")
     var export = false
     
-    
-    
     mutating func run() throws {
         let shippingLocales = URL(fileURLWithPath: projectPath).deletingLastPathComponent().appendingPathComponent("shipping_locales.txt")
         let locales = try! String(contentsOf: shippingLocales).components(separatedBy: .newlines).filter { !$0.isEmpty }
         if export {
             ExportTask(xcodeProjPath: projectPath, l10nRepoPath: l10nPath, locales: locales).run()
+            CreateTemplatesTask(l10nRepoPath: l10nPath).run()
         }
     }
 }

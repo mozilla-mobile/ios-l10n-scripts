@@ -31,11 +31,10 @@ struct ExportTask {
     
     private func exportLocales() {
         let command = "xcodebuild -exportLocalizations -project \(xcodeProjPath) -localizationPath \(EXPORT_BASE_PATH)"
-        print(locales)
         let command2 = locales
             .map { LOCALE_MAP[$0] ?? $0 }
             .map { "-exportLanguage \($0)" }.joined(separator: " ")
-        print(command2)
+
         let task = Process()
         task.launchPath = "/bin/sh"
         task.arguments = ["-c", command + " " + command2]

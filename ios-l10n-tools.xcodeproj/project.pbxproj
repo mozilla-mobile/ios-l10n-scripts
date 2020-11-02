@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		D588FF312550876F006CC01B /* export.swift in Sources */ = {isa = PBXBuildFile; fileRef = D588FF302550876F006CC01B /* export.swift */; };
+		D588FF342550A858006CC01B /* CreateTemplatesTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = D588FF332550A858006CC01B /* CreateTemplatesTask.swift */; };
 		D59B2D6A2540FD1C006B70B9 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59B2D692540FD1C006B70B9 /* main.swift */; };
 		D59B2D99254109CC006B70B9 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = D59B2D98254109CC006B70B9 /* ArgumentParser */; };
 /* End PBXBuildFile section */
@@ -26,6 +27,7 @@
 
 /* Begin PBXFileReference section */
 		D588FF302550876F006CC01B /* export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = export.swift; sourceTree = "<group>"; };
+		D588FF332550A858006CC01B /* CreateTemplatesTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTemplatesTask.swift; sourceTree = "<group>"; };
 		D59B2D662540FD1C006B70B9 /* ios-l10n-tools */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ios-l10n-tools"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D59B2D692540FD1C006B70B9 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,6 +65,7 @@
 			children = (
 				D59B2D692540FD1C006B70B9 /* main.swift */,
 				D588FF302550876F006CC01B /* export.swift */,
+				D588FF332550A858006CC01B /* CreateTemplatesTask.swift */,
 			);
 			path = "ios-l10n-tools";
 			sourceTree = "<group>";
@@ -130,6 +133,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D588FF342550A858006CC01B /* CreateTemplatesTask.swift in Sources */,
 				D59B2D6A2540FD1C006B70B9 /* main.swift in Sources */,
 				D588FF312550876F006CC01B /* export.swift in Sources */,
 			);
