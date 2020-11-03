@@ -30,7 +30,7 @@ struct CreateTemplatesTask {
         }
         
         try root.nodes(forXPath: "file/body/trans-unit/target").forEach { $0.detach() }
-        try xml.xmlString.write(to: url, atomically: true, encoding: .utf16)
+        try xml.xmlString.write(to: url, atomically: true, encoding: .utf8)
     }
     
     func run() {
