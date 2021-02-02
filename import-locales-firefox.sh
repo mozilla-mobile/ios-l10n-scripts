@@ -35,8 +35,11 @@ else
 fi
 
 echo "Creating firefoxios-l10n Git repo"
-rm -rf firefoxios-l10n 
-git clone --depth 1 https://github.com/mozilla-l10n/firefoxios-l10n firefoxios-l10n || exit 1
+rm -rf firefoxios-l10n
+git clone https://github.com/mozilla-l10n/firefoxios-l10n firefoxios-l10n || exit 1
+cd firefoxios-l10n
+git checkout 76baab4264143f800e97311f587e03badb3269e5
+cd ..
 
 # Store current relative path to the script
 script_path=$(dirname "$0")
