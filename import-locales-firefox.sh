@@ -6,12 +6,18 @@ if [ ! -d Client.xcodeproj ]; then
 fi
 
 ignore_errors=false
+release=false
 # Check command line parameters
 while [[ $# -gt 0 ]]
 do
     case $1 in
         --ignore-errors)
             ignore_errors=true
+        ;;
+    esac
+    case $1 in
+        --release)
+            release=true
         ;;
     esac
     shift
@@ -47,7 +53,7 @@ script_path=$(dirname "$0")
 # Remove the templates directory so that scripts do not have to special case it
 rm -rf firefoxios-l10n/templates
 
-if [ "$1" == "--release" ]
+if [ "${release}" = true ]
 then
     # Get the list of shipping locales. File is in the root of the main
     # firefox-ios code repository
