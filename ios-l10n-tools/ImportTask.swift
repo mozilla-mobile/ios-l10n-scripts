@@ -7,6 +7,23 @@
 
 import Foundation
 
+let generateManifest: (String) -> String = { targetLocale in
+    return """
+        {
+          "developmentRegion" : "en",
+          "project" : "Client.xcodeproj",
+          "targetLocale" : "\(targetLocale)",
+          "toolInfo" : {
+            "toolBuildNumber" : "12E262",
+            "toolID" : "com.apple.dt.xcode",
+            "toolName" : "Xcode",
+            "toolVersion" : "12.5"
+          },
+          "version" : "1.0"
+        }
+    """
+}
+
 struct ImportTask {
     let xcodeProjPath: String
     let l10nRepoPath: String
@@ -45,6 +62,8 @@ struct ImportTask {
         let locale = LOCALE_MAPPING[locale] ?? locale
         let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("temp.xliff")
         let destination = temporaryDir.appendingPathComponent("\(locale).xcloc/Localized Contents/\(locale).xliff")
+        let sourceContentsDestination = temporaryDir.appendingPathComponent("\(locale).xcloc/Source Contents/temp.txt")
+        let manifestDestination = temporaryDir.appendingPathComponent("\(locale).xcloc/contents.json")
     
         let fileExists = FileManager.default.fileExists(atPath: tmp.path)
         let destinationExists = FileManager.default.fileExists(atPath: destination.deletingLastPathComponent().path)
@@ -57,8 +76,10 @@ struct ImportTask {
         
         if !destinationExists {
             try! FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
+            try! FileManager.default.createDirectory(at: sourceContentsDestination, withIntermediateDirectories: true)
         }
-        
+
+        try! generateManifest(LOCALE_MAPPING[locale] ?? locale).write(to: manifestDestination, atomically: true, encoding: .utf8)
         return try! FileManager.default.replaceItemAt(destination, withItemAt: tmp)!
     }
     

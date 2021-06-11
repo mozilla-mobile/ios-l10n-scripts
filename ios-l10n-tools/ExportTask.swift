@@ -117,7 +117,7 @@ struct ExportTask {
     
     private let queue = DispatchQueue(label: "backgroundQueue", attributes: .concurrent)
 
-    private let EXCLUDED_TRANSLATIONS: Set<String> = ["CFBundleName", "CFBundleDisplayName", "CFBundleShortVersionString"]
+    private let EXCLUDED_TRANSLATIONS: Set<String> = ["CFBundleName", "CFBundleDisplayName", "CFBundleShortVersionString", "1Password Fill Browser Action"]
     private let REQUIRED_TRANSLATIONS: Set<String> = [
         "NSCameraUsageDescription",
         "NSLocationWhenInUseUsageDescription",
@@ -139,6 +139,7 @@ struct ExportTask {
     
     private let EXPORT_BASE_PATH = "/tmp/ios-localization"
     
+    
     private func exportLocales() {
         let command = "xcodebuild -exportLocalizations -project \(xcodeProjPath) -localizationPath \(EXPORT_BASE_PATH)"
         let command2 = locales
@@ -151,9 +152,10 @@ struct ExportTask {
         task.waitUntilExit()
     }
     
-    private func handleXML(path: String, locale: String) {
+    private func handleXML(path: String, locale: String, commentOverrides: [String : String]) {
         let url = URL(fileURLWithPath: path.appending("/\(locale).xcloc/Localized Contents/\(locale).xliff"))
-        let xml = try! XMLDocument(contentsOf: url, options: .nodePreserveWhitespace)
+        let manifestUrl = URL(fileURLWithPath: path.appending("/\(locale).xcloc/contents.json"))
+        let xml = try! XMLDocument(contentsOf: url, options: [.nodePreserveWhitespace, .nodeCompactEmptyElement])
         guard let root = xml.rootElement() else { return }
         let fileNodes = try! root.nodes(forXPath: "file")
         for case let fileNode as XMLElement in fileNodes {
@@ -165,6 +167,12 @@ struct ExportTask {
             for case let translation as XMLElement in translations {
                 if translation.attribute(forName: "id")?.stringValue.map(EXCLUDED_TRANSLATIONS.contains) == true {
                     translation.detach()
+                }
+                
+                if let comment = translation.attribute(forName: "id")?.stringValue.flatMap { commentOverrides[$0] } {
+                    if let element = try? translation.nodes(forXPath: "note").first {
+                        element.setStringValue(comment, resolvingEntities: true)
+                    }
                 }
             }
             
@@ -194,9 +202,18 @@ struct ExportTask {
     
     func run() {
         exportLocales()
+        let commentOverrideURL = URL(fileURLWithPath: xcodeProjPath).deletingLastPathComponent().appendingPathComponent("l10n_comments.txt")
+        let commentOverrides: [String : String] = (try? String(contentsOf: commentOverrideURL))?
+            .split(whereSeparator: \.isNewline)
+            .reduce(into: [String : String]()) { result, item in
+                let items = item.split(separator: "=")
+                guard let key = items.first, let value = items.last else { return }
+                result[String(key)] = String(value)
+            } ?? [:]
+        
         locales.forEach { locale in
             queue.async {
-                handleXML(path: EXPORT_BASE_PATH, locale: locale)
+                handleXML(path: EXPORT_BASE_PATH, locale: locale, commentOverrides: commentOverrides)
                 copyToL10NRepo(locale: locale)
             }
         }
